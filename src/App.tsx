@@ -40,21 +40,6 @@ function PortfolioContent() {
     
     // Function to smoothly scroll to a specific section
     const scrollToSection = (sectionIndex: number) => {
-      // Check if we're on mobile
-      const isMobile = window.innerWidth < 768;
-      
-      // Update active section
-      const sectionIds = ['hero', 'about', 'skills', 'projects', 'contact'];
-      if (setActiveSection && sectionIndex >= 0 && sectionIndex < sectionIds.length) {
-        setActiveSection(sectionIds[sectionIndex] as any);
-      }
-      
-      // On mobile, don't automatically scroll between sections
-      if (isMobile) {
-        return;
-      }
-      
-      // For desktop, continue with smooth scrolling
       if (isScrolling) return;
       isScrolling = true;
       
@@ -62,19 +47,35 @@ function PortfolioContent() {
       const startPosition = window.scrollY;
       const distance = targetY - startPosition;
       
-      const duration = 600; // Desktop scrolling duration
+      // Optimized scrolling for mobile devices
+      const isMobile = window.innerWidth < 768;
+      const duration = isMobile ? 250 : 600; // Much faster on mobile for better responsiveness
       let startTime: number;
       
-      // Smooth scroll animation function
+      // Update active section
+      const sectionIds = ['hero', 'about', 'skills', 'projects', 'contact'];
+      if (setActiveSection && sectionIndex >= 0 && sectionIndex < sectionIds.length) {
+        setActiveSection(sectionIds[sectionIndex] as any);
+      }
+      
+      // Smooth scroll animation function with improved mobile performance
       const animateScroll = (timestamp: number) => {
         if (!startTime) startTime = timestamp;
         const elapsed = timestamp - startTime;
         
-        // Smoother easing for desktop
+        // Use a more aggressive easing for mobile for better responsiveness
         const progress = Math.min(elapsed / duration, 1);
-        const easeProgress = progress < 0.5 
-          ? 4 * progress * progress * progress 
-          : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+        let easeProgress;
+        
+        if (isMobile) {
+          // Linear easing for mobile - most responsive and predictable
+          easeProgress = progress;
+        } else {
+          // Smoother easing for desktop
+          easeProgress = progress < 0.5 
+            ? 4 * progress * progress * progress 
+            : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+        }
         
         window.scrollTo({
           top: startPosition + distance * easeProgress,
@@ -90,10 +91,10 @@ function PortfolioContent() {
             behavior: 'auto'
           });
           
-          // Reset scrolling state
+          // Reset scrolling state after a shorter delay on mobile
           setTimeout(() => {
             isScrolling = false;
-          }, 100);
+          }, isMobile ? 30 : 100);
         }
       };
       
@@ -124,11 +125,23 @@ function PortfolioContent() {
       const scrollHeight = scrollContainer.scrollHeight;
       const clientHeight = scrollContainer.clientHeight;
       
-      // For mobile: Don't automatically transition between sections
+      // For mobile: Only transition when at the edge of a section
       if (isMobile) {
-        // On mobile, we don't want sections to automatically slide up or down
-        // Instead, let the user navigate using the navigation menu
-        return false;
+        // Get scroll position within the section
+        const isAtBottom = scrollTop + clientHeight >= scrollHeight - 5;
+        const isAtTop = scrollTop <= 5;
+        
+        // If scrolling down and at the bottom of section content, go to next section
+        if (delta > 0 && isAtBottom && currentSectionIndex < sections.length - 1) {
+          scrollToSection(currentSectionIndex + 1);
+          return true;
+        }
+        
+        // If scrolling up and at the top of section content, go to previous section
+        if (delta < 0 && isAtTop && currentSectionIndex > 0) {
+          scrollToSection(currentSectionIndex - 1);
+          return true;
+        }
       } else {
         // Desktop behavior - smoother transitions
         // If scrolling down and we're at the bottom of the section content, go to next section
@@ -204,12 +217,12 @@ function PortfolioContent() {
       if (currentSectionElement) {
         const sectionContent = currentSectionElement.querySelector('section');
         if (sectionContent) {
-          // Check if we're at the edge of scrollable content
-          const isAtBottom = sectionContent.scrollTop + sectionContent.clientHeight >= sectionContent.scrollHeight - 2;
-          const isAtTop = sectionContent.scrollTop <= 2;
-          
-          // For mobile: Only transition when we're exactly at the edge and trying to scroll further
+          // For mobile: Handle section transitions at edges
           if (isMobile) {
+            // Check if we're at the edge of scrollable content
+            const isAtBottom = sectionContent.scrollTop + sectionContent.clientHeight >= sectionContent.scrollHeight - 5;
+            const isAtTop = sectionContent.scrollTop <= 5;
+            
             if ((swipeDirection > 0 && isAtBottom) || (swipeDirection < 0 && isAtTop)) {
               // Handle section transition at edges
               const minSwipeDistance = Math.min(40, window.innerHeight * 0.06);
@@ -229,12 +242,6 @@ function PortfolioContent() {
                 
                 // Calculate target section
                 const targetSection = Math.max(0, Math.min(4, currentSectionIndex + swipeDirection));
-                
-                // Update active section
-                const sectionIds = ['hero', 'about', 'skills', 'projects', 'contact'];
-                if (setActiveSection && targetSection >= 0 && targetSection < sectionIds.length) {
-                  setActiveSection(sectionIds[targetSection] as any);
-                }
                 
                 // Only scroll if we're changing sections
                 if (targetSection !== currentSectionIndex) {
@@ -323,11 +330,14 @@ function PortfolioContent() {
           // Check if the section is scrollable (content height > container height)
           const isScrollable = sectionContent.scrollHeight > sectionContent.clientHeight;
           
-          // On mobile, if the section isn't scrollable or we're at the edges, check for section transition
+          // On mobile, check for section transitions at the edges
           if (isMobile) {
+            const isAtBottom = sectionContent.scrollTop + sectionContent.clientHeight >= sectionContent.scrollHeight - 5;
+            const isAtTop = sectionContent.scrollTop <= 5;
+            
             if (!isScrollable || 
-                (e.deltaY > 0 && sectionContent.scrollTop + sectionContent.clientHeight >= sectionContent.scrollHeight - 2) ||
-                (e.deltaY < 0 && sectionContent.scrollTop <= 2)) {
+                (e.deltaY > 0 && isAtBottom) ||
+                (e.deltaY < 0 && isAtTop)) {
               // Check if we need to transition to another section
               if (checkSectionTransition(e.deltaY)) {
                 e.preventDefault();
