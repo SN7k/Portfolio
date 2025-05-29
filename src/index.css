@@ -9,15 +9,33 @@
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     scroll-behavior: auto; /* Use auto instead of smooth for more reliable behavior */
+    overscroll-behavior-y: none; /* Prevent bounce effect on some browsers */
   }
   
+  /* Ensure sections take up full height on mobile */
+  section {
+    min-height: 100vh;
+    position: relative;
+    overflow-anchor: none; /* Disable browser scroll anchoring for more control */
+  }
+  
+  /* Specific styles for the Contact section */
   #contact {
     scroll-snap-align: start;
     scroll-margin-top: 0;
-    padding-bottom: 120px; /* Extra padding to ensure content is visible */
-    margin-bottom: 0;
+    padding-bottom: 140px !important; /* Extra padding to ensure content is visible */
+    margin-bottom: 0 !important;
     position: relative;
     z-index: 10; /* Ensure it's above other elements */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Ensure section content is visible */
+  .section-content {
+    width: 100%;
+    position: relative;
+    z-index: 5;
   }
   
   /* Improve form display on mobile */
@@ -33,12 +51,18 @@
     transform: none !important;
     transition: none !important;
   }
+  
+  /* Fix for iOS Safari bottom bar issues */
+  .ios-safari-fix {
+    height: calc(100vh - env(safe-area-inset-bottom));
+  }
 }
 
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 80px;
   height: 100%;
+  overscroll-behavior: contain; /* Prevent scroll chaining */
 }
 
 body {
@@ -46,6 +70,13 @@ body {
   overflow-x: hidden;
   min-height: 100%;
   -webkit-overflow-scrolling: touch; /* Enables momentum scrolling on iOS */
+  overscroll-behavior-y: contain; /* Prevent bounce effect */
+}
+
+/* Add a class for sections with scrollable content */
+.section-content {
+  position: relative;
+  z-index: 2;
 }
 
 .section-container {

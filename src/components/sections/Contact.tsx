@@ -19,13 +19,29 @@ export const Contact = () => {
   // Function to force scroll to bottom on mobile
   const forceScrollToBottom = () => {
     if (window.innerWidth < 768) {
-      // Force scroll to bottom of page
-      window.scrollTo(0, document.body.scrollHeight);
+      // Force scroll to bottom of page with a small offset to ensure full visibility
+      const bottomPosition = document.body.scrollHeight - window.innerHeight;
       
-      // Try again after a delay to ensure it works
+      // Use auto behavior for immediate effect
+      window.scrollTo({
+        top: bottomPosition,
+        behavior: 'auto'
+      });
+      
+      // Try again after delays to ensure it works in all scenarios
       setTimeout(() => {
-        window.scrollTo(0, document.body.scrollHeight);
+        window.scrollTo({
+          top: bottomPosition,
+          behavior: 'auto'
+        });
       }, 100);
+      
+      setTimeout(() => {
+        window.scrollTo({
+          top: bottomPosition,
+          behavior: 'auto'
+        });
+      }, 300);
     }
   };
 
@@ -58,7 +74,10 @@ export const Contact = () => {
     
     // For mobile, force scroll to bottom when this component mounts
     if (isMobileView) {
-      forceScrollToBottom();
+      // Delay the initial force scroll to ensure the component is fully rendered
+      setTimeout(() => {
+        forceScrollToBottom();
+      }, 100);
       
       // Add scroll event listener to keep forcing scroll to bottom
       const handleScroll = () => {
@@ -67,7 +86,8 @@ export const Contact = () => {
         const windowHeight = window.innerHeight;
         const documentHeight = document.body.scrollHeight;
         
-        if (documentHeight - (scrollPosition + windowHeight) < 150) {
+        // More aggressive threshold for mobile
+        if (documentHeight - (scrollPosition + windowHeight) < 200) {
           forceScrollToBottom();
         }
       };
@@ -88,12 +108,19 @@ export const Contact = () => {
           if (entry.isIntersecting) {
             // When this section becomes visible on mobile, force scroll to bottom
             if (isMobileView) {
+              // Use multiple attempts with increasing delays to ensure visibility
               forceScrollToBottom();
+              setTimeout(forceScrollToBottom, 200);
+              setTimeout(forceScrollToBottom, 500);
             }
+            
+            // Animate form with a slight delay
             if (formRef.current) {
               formRef.current.style.opacity = '1';
               formRef.current.style.transform = 'translateX(0)';
             }
+            
+            // Animate info section with a longer delay
             setTimeout(() => {
               if (infoRef.current) {
                 infoRef.current.style.opacity = '1';
@@ -103,7 +130,8 @@ export const Contact = () => {
           }
         });
       },
-      { threshold: 0.2 }
+      // Lower threshold to trigger earlier
+      { threshold: 0.1 }
     );
 
     if (sectionRef.current) {
@@ -121,8 +149,8 @@ export const Contact = () => {
     <section
       id="contact"
       ref={sectionRef}
-      className={`${isMobileView ? 'pt-10 pb-32' : 'min-h-screen py-20'} flex flex-col items-start justify-start sm:items-center sm:justify-center bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-900 relative`}
-      style={isMobileView ? { marginBottom: '-1px' } : undefined} // Ensure no gap at bottom on mobile
+      className={`${isMobileView ? 'pt-10 pb-40' : 'min-h-screen py-20'} flex flex-col items-start justify-start sm:items-center sm:justify-center bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-900 relative section-content`}
+      style={isMobileView ? { marginBottom: '0', paddingBottom: '120px' } : undefined} // Increased padding to ensure full visibility on mobile
     >
       <div className="container mx-auto px-4 sm:px-6 section-content">
         <div className="text-center mb-16">
