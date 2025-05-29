@@ -40,6 +40,21 @@ function PortfolioContent() {
     
     // Function to smoothly scroll to a specific section
     const scrollToSection = (sectionIndex: number) => {
+      // Check if we're on mobile
+      const isMobile = window.innerWidth < 768;
+      
+      // Update active section
+      const sectionIds = ['hero', 'about', 'skills', 'projects', 'contact'];
+      if (setActiveSection && sectionIndex >= 0 && sectionIndex < sectionIds.length) {
+        setActiveSection(sectionIds[sectionIndex] as any);
+      }
+      
+      // On mobile, don't automatically scroll between sections
+      if (isMobile) {
+        return;
+      }
+      
+      // For desktop, continue with smooth scrolling
       if (isScrolling) return;
       isScrolling = true;
       
@@ -47,29 +62,19 @@ function PortfolioContent() {
       const startPosition = window.scrollY;
       const distance = targetY - startPosition;
       
-      // Optimized scrolling for mobile devices
-      const isMobile = window.innerWidth < 768;
-      const duration = isMobile ? 250 : 600; // Much faster on mobile for better responsiveness
+      const duration = 600; // Desktop scrolling duration
       let startTime: number;
       
-      // Smooth scroll animation function with improved mobile performance
+      // Smooth scroll animation function
       const animateScroll = (timestamp: number) => {
         if (!startTime) startTime = timestamp;
         const elapsed = timestamp - startTime;
         
-        // Use a more aggressive easing for mobile for better responsiveness
+        // Smoother easing for desktop
         const progress = Math.min(elapsed / duration, 1);
-        let easeProgress;
-        
-        if (isMobile) {
-          // Linear easing for mobile - most responsive and predictable
-          easeProgress = progress;
-        } else {
-          // Smoother easing for desktop
-          easeProgress = progress < 0.5 
-            ? 4 * progress * progress * progress 
-            : 1 - Math.pow(-2 * progress + 2, 3) / 2;
-        }
+        const easeProgress = progress < 0.5 
+          ? 4 * progress * progress * progress 
+          : 1 - Math.pow(-2 * progress + 2, 3) / 2;
         
         window.scrollTo({
           top: startPosition + distance * easeProgress,
@@ -85,10 +90,10 @@ function PortfolioContent() {
             behavior: 'auto'
           });
           
-          // Reset scrolling state after a shorter delay on mobile
+          // Reset scrolling state
           setTimeout(() => {
             isScrolling = false;
-          }, isMobile ? 30 : 100);
+          }, 100);
         }
       };
       
@@ -119,25 +124,11 @@ function PortfolioContent() {
       const scrollHeight = scrollContainer.scrollHeight;
       const clientHeight = scrollContainer.clientHeight;
       
-      // Calculate how close we are to the bottom or top
-      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 2;
-      const isAtTop = scrollTop <= 2;
-      
-      // For mobile: Only transition when we're exactly at the edge and trying to scroll further
+      // For mobile: Don't automatically transition between sections
       if (isMobile) {
-        // If scrolling down and we're at the bottom of the section content, go to next section
-        if (delta > 0 && isAtBottom && currentSectionIndex < sections.length - 1) {
-          // We're at the bottom of the content and scrolling down - go to next section
-          scrollToSection(currentSectionIndex + 1);
-          return true;
-        }
-        
-        // If scrolling up and we're at the top of the section, go to previous section
-        if (delta < 0 && isAtTop && currentSectionIndex > 0) {
-          // We're at the top of the content and scrolling up - go to previous section
-          scrollToSection(currentSectionIndex - 1);
-          return true;
-        }
+        // On mobile, we don't want sections to automatically slide up or down
+        // Instead, let the user navigate using the navigation menu
+        return false;
       } else {
         // Desktop behavior - smoother transitions
         // If scrolling down and we're at the bottom of the section content, go to next section
