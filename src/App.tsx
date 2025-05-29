@@ -105,28 +105,28 @@ function PortfolioContent() {
       const sectionElements = Array.from(sectionsRef.current?.children || []);
       const currentSectionElement = sectionElements[currentSectionIndex] as HTMLElement;
       
-      if (!currentSectionElement) return;
+      if (!currentSectionElement) return false;
       
       // Get the content height of the current section
       const sectionContent = currentSectionElement.querySelector('section');
-      if (!sectionContent) return;
+      if (!sectionContent) return false;
       
-      const contentHeight = sectionContent.scrollHeight;
-      const viewportHeight = window.innerHeight;
-      const scrollPosition = window.scrollY;
-      
-      // Calculate the position within the current section
-      const sectionStart = currentSectionIndex * viewportHeight;
-      const sectionScrollPosition = scrollPosition - sectionStart;
+      // Get the scroll container (the section element itself)
+      const scrollContainer = sectionContent;
+      const scrollTop = scrollContainer.scrollTop;
+      const scrollHeight = scrollContainer.scrollHeight;
+      const clientHeight = scrollContainer.clientHeight;
       
       // If scrolling down and we're at the bottom of the section content, go to next section
-      if (delta > 0 && sectionScrollPosition >= contentHeight - viewportHeight - 10 && currentSectionIndex < sections.length - 1) {
+      if (delta > 0 && scrollTop + clientHeight >= scrollHeight - 5 && currentSectionIndex < sections.length - 1) {
+        // We're at the bottom of the content and scrolling down
         scrollToSection(currentSectionIndex + 1);
         return true;
       }
       
       // If scrolling up and we're at the top of the section, go to previous section
-      if (delta < 0 && sectionScrollPosition <= 10 && currentSectionIndex > 0) {
+      if (delta < 0 && scrollTop <= 5 && currentSectionIndex > 0) {
+        // We're at the top of the content and scrolling up
         scrollToSection(currentSectionIndex - 1);
         return true;
       }
@@ -385,7 +385,15 @@ function PortfolioContent() {
     // Set the main container height and handle resize events
     const updateContainerHeight = () => {
       if (sectionsRef.current) {
+        // Set exact height for the container to prevent any extra space
         sectionsRef.current.style.height = `${window.innerHeight * 5}px`; // 5 sections
+        
+        // Ensure each section has the correct height
+        const sections = Array.from(sectionsRef.current.children);
+        sections.forEach((section) => {
+          const sectionElement = section as HTMLElement;
+          sectionElement.style.height = `${window.innerHeight}px`;
+        });
       }
     };
     
@@ -415,21 +423,31 @@ function PortfolioContent() {
       <ScrollProgress />
       <main className="relative">
         <div ref={sectionsRef} className="relative">
-          <section className="section-container">
-            <Hero />
-          </section>
-          <section className="section-container">
-            <About />
-          </section>
-          <section className="section-container">
-            <Skills />
-          </section>
-          <section className="section-container">
-            <Projects />
-          </section>
-          <section className="section-container">
-            <Contact />
-          </section>
+          <div className="section-container">
+            <section>
+              <Hero />
+            </section>
+          </div>
+          <div className="section-container">
+            <section>
+              <About />
+            </section>
+          </div>
+          <div className="section-container">
+            <section>
+              <Skills />
+            </section>
+          </div>
+          <div className="section-container">
+            <section>
+              <Projects />
+            </section>
+          </div>
+          <div className="section-container">
+            <section>
+              <Contact />
+            </section>
+          </div>
         </div>
       </main>
     </div>
