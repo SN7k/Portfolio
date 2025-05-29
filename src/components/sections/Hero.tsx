@@ -44,7 +44,7 @@ export const Hero = () => {
         <div className="absolute bottom-1/4 right-1/3 w-96 h-96 bg-pink-300/20 dark:bg-pink-500/10 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
       </div>
 
-      <div className="container mx-auto px-6 py-12 relative z-10">
+      <div className="container mx-auto px-6 py-12 relative z-10 section-content">
         <div className="text-center max-w-3xl mx-auto">
           <h1 
             ref={titleRef}

@@ -7,6 +7,7 @@ interface ScrollContextType {
   setActiveSection: (section: Section) => void;
   scrollToSection: (section: Section) => void;
   scrollProgress: number;
+  isMobileView: boolean;
 }
 
 const ScrollContext = createContext<ScrollContextType | undefined>(undefined);
@@ -27,6 +28,7 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
   const [activeSection, setActiveSection] = useState<Section>('hero');
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(false);
   
   // Touch tracking for mobile
   const touchStartY = useRef<number | null>(null);
@@ -108,32 +110,73 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
     }
   };
 
+  // Check if content overflows in the current section
+  const checkContentOverflow = () => {
+    if (!isMobileView) return false;
+    
+    // Get the current section based on scroll position
+    const currentSectionIndex = Math.round(window.scrollY / window.innerHeight);
+    const sectionIds = ['hero', 'about', 'skills', 'projects', 'contact'];
+    
+    if (currentSectionIndex >= 0 && currentSectionIndex < sectionIds.length) {
+      const sectionId = sectionIds[currentSectionIndex];
+      const sectionElement = document.getElementById(sectionId);
+      
+      if (sectionElement) {
+        // Check if the section's content height is greater than the viewport height
+        const sectionContent = sectionElement.querySelector('.section-content');
+        if (sectionContent) {
+          const contentHeight = sectionContent.scrollHeight;
+          const viewportHeight = window.innerHeight;
+          return contentHeight > viewportHeight - 100; // Account for some padding
+        }
+      }
+    }
+    
+    return false;
+  };
+
   // Handle touch events for mobile scrolling
   useEffect(() => {
     const handleTouchStart = (e: TouchEvent) => {
+      // Don't intercept touch events if content overflows in mobile view
+      if (isMobileView && checkContentOverflow()) {
+        return;
+      }
+      
       touchStartY.current = e.touches[0].clientY;
       touchEndY.current = null;
     };
 
     const handleTouchMove = (e: TouchEvent) => {
+      // Don't track touch move if content overflows in mobile view
+      if (isMobileView && checkContentOverflow()) {
+        return;
+      }
+      
       touchEndY.current = e.touches[0].clientY;
     };
 
     const handleTouchEnd = () => {
+      // Don't handle touch end if content overflows in mobile view
+      if (isMobileView && checkContentOverflow()) {
+        return;
+      }
+      
       if (!touchStartY.current || !touchEndY.current) return;
       
       // Calculate swipe distance and direction
       const swipeDistance = touchStartY.current - touchEndY.current;
       const swipeDirection = swipeDistance > 0 ? 1 : -1; // 1 for up (next section), -1 for down (prev section)
       
-      // Only trigger if the swipe is significant enough (prevent accidental swipes)
-      const minSwipeDistance = 50; // Minimum pixels to consider it a swipe
+      // Increase minimum swipe distance for mobile to prevent accidental swipes
+      const minSwipeDistance = isMobileView ? 80 : 50; // Higher threshold on mobile
       
       // Check if we should handle this swipe
       if (Math.abs(swipeDistance) >= minSwipeDistance) {
         // Prevent rapid consecutive swipes
         const now = Date.now();
-        if (now - lastTouchTime.current < 500) return; // Minimum 500ms between swipes
+        if (now - lastTouchTime.current < 700) return; // Increased minimum time between swipes
         lastTouchTime.current = now;
         
         // Calculate current section and target section
@@ -167,8 +210,21 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
       }
       
       // Set a timeout to snap to the nearest section after scrolling stops
+      // But only if we're not in mobile view with content overflow
       scrollTimeoutRef.current = window.setTimeout(() => {
         if (isScrolling) return;
+        
+        // Skip snapping if on mobile with content overflow
+        if (isMobileView && checkContentOverflow()) {
+          // Just update the active section without snapping
+          const sections: Section[] = ['hero', 'about', 'skills', 'projects', 'contact'];
+          const currentSectionIndex = Math.floor(scrollPosition / windowHeight);
+          
+          if (currentSectionIndex >= 0 && currentSectionIndex < sections.length) {
+            setActiveSection(sections[currentSectionIndex]);
+          }
+          return;
+        }
         
         const sections: Section[] = ['hero', 'about', 'skills', 'projects', 'contact'];
         const currentSectionIndex = Math.round(scrollPosition / windowHeight);
@@ -193,13 +249,23 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
       }, 150);
     };
 
-    // Add event listeners for both touch and scroll
+    // Check and set mobile view state
+    const handleResize = () => {
+      setIsMobileView(window.innerWidth < 768);
+    };
+    
+    // Initial check
+    handleResize();
+    
+    // Add event listeners for resize, touch and scroll
+    window.addEventListener('resize', handleResize);
     window.addEventListener('touchstart', handleTouchStart, { passive: true });
     window.addEventListener('touchmove', handleTouchMove, { passive: true });
     window.addEventListener('touchend', handleTouchEnd, { passive: true });
     window.addEventListener('scroll', handleScroll);
     
     return () => {
+      window.removeEventListener('resize', handleResize);
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('touchend', handleTouchEnd);
@@ -212,7 +278,7 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
   }, [isScrolling]);
 
   return (
-    <ScrollContext.Provider value={{ activeSection, setActiveSection, scrollToSection, scrollProgress }}>
+    <ScrollContext.Provider value={{ activeSection, setActiveSection, scrollToSection, scrollProgress, isMobileView }}>
       {children}
     </ScrollContext.Provider>
   );

@@ -83,7 +83,7 @@ export const Skills = () => {
       ref={sectionRef}
       className="min-h-screen flex items-center py-20 bg-gray-50 dark:bg-gray-800 relative"
     >
-      <div className="container mx-auto px-4 sm:px-6">
+      <div className="container mx-auto px-4 sm:px-6 section-content">
         <div
           ref={titleRef}
           className="text-center mb-16 opacity-0 transform translate-y-8 transition-all duration-700 ease-out"

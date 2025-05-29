@@ -44,7 +44,7 @@ export const About = () => {
       ref={sectionRef}
       className="min-h-screen flex items-center py-20 bg-white dark:bg-gray-900 relative"
     >
-      <div className="container mx-auto px-4 sm:px-6">
+      <div className="container mx-auto px-4 sm:px-6 section-content">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
           <div
             ref={imageRef}
