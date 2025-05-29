@@ -38,6 +38,12 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
   
   // Detect if device is mobile
   const isMobile = () => window.innerWidth < 768;
+  
+  // Get total number of sections
+  const getTotalSections = () => {
+    const sectionIds: Section[] = ['hero', 'about', 'skills', 'projects', 'contact'];
+    return sectionIds.length;
+  };
 
   const scrollToSection = (section: Section) => {
     // Don't start a new scroll if we're already scrolling
@@ -52,7 +58,11 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
       setIsScrolling(true);
       
       // Calculate the target scroll position (section height * index)
-      const targetY = window.innerHeight * sectionIndex;
+      // For the last section, adjust to ensure it's fully visible
+      const isLastSection = sectionIndex === getTotalSections() - 1;
+      const targetY = isLastSection 
+        ? document.body.scrollHeight - window.innerHeight 
+        : window.innerHeight * sectionIndex;
       
       // Use custom smooth scrolling to avoid glitches
       const startPosition = window.scrollY;
@@ -60,7 +70,7 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
       
       // Optimize for mobile - faster and more responsive
       const mobile = isMobile();
-      const duration = mobile ? 300 : 600; // Even faster on mobile
+      const duration = mobile ? 200 : 600; // Much faster on mobile for better responsiveness
       let startTime: number;
       
       // Update active section immediately
@@ -76,8 +86,8 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
         let easeProgress;
         
         if (mobile) {
-          // Faster, more direct easing for mobile
-          easeProgress = 1 - Math.pow(1 - progress, 3);
+          // Even faster, more direct easing for mobile - almost linear for better performance
+          easeProgress = 1 - Math.pow(1 - progress, 2);
         } else {
           // Smoother easing for desktop
           easeProgress = progress < 0.5 
@@ -100,8 +110,8 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
           });
           
           // Reset scrolling state after a short delay
-          // Use a shorter delay on mobile for better responsiveness
-          setTimeout(() => setIsScrolling(false), mobile ? 50 : 100);
+          // Use an even shorter delay on mobile for better responsiveness
+          setTimeout(() => setIsScrolling(false), mobile ? 30 : 100);
         }
       };
       
@@ -118,6 +128,11 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
     const currentSectionIndex = Math.round(window.scrollY / window.innerHeight);
     const sectionIds = ['hero', 'about', 'skills', 'projects', 'contact'];
     
+    // Always return true for the last section to ensure it can be fully scrolled
+    if (currentSectionIndex === sectionIds.length - 1) {
+      return true;
+    }
+    
     if (currentSectionIndex >= 0 && currentSectionIndex < sectionIds.length) {
       const sectionId = sectionIds[currentSectionIndex];
       const sectionElement = document.getElementById(sectionId);
@@ -128,7 +143,7 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
         if (sectionContent) {
           const contentHeight = sectionContent.scrollHeight;
           const viewportHeight = window.innerHeight;
-          return contentHeight > viewportHeight - 100; // Account for some padding
+          return contentHeight > viewportHeight - 80; // Reduced padding for better detection
         }
       }
     }
@@ -169,14 +184,14 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
       const swipeDistance = touchStartY.current - touchEndY.current;
       const swipeDirection = swipeDistance > 0 ? 1 : -1; // 1 for up (next section), -1 for down (prev section)
       
-      // Increase minimum swipe distance for mobile to prevent accidental swipes
-      const minSwipeDistance = isMobileView ? 80 : 50; // Higher threshold on mobile
+      // Optimize swipe distance threshold for mobile to balance sensitivity and accuracy
+      const minSwipeDistance = isMobileView ? 60 : 50; // Slightly lower threshold for better responsiveness
       
       // Check if we should handle this swipe
       if (Math.abs(swipeDistance) >= minSwipeDistance) {
-        // Prevent rapid consecutive swipes
+        // Prevent rapid consecutive swipes but allow for quicker interactions
         const now = Date.now();
-        if (now - lastTouchTime.current < 700) return; // Increased minimum time between swipes
+        if (now - lastTouchTime.current < 500) return; // Reduced minimum time between swipes for better responsiveness
         lastTouchTime.current = now;
         
         // Calculate current section and target section
@@ -218,7 +233,12 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
         if (isMobileView && checkContentOverflow()) {
           // Just update the active section without snapping
           const sections: Section[] = ['hero', 'about', 'skills', 'projects', 'contact'];
-          const currentSectionIndex = Math.floor(scrollPosition / windowHeight);
+          
+          // Special handling for the last section to ensure it's properly detected
+          const isNearBottom = scrollPosition + windowHeight >= document.body.scrollHeight - 50;
+          const currentSectionIndex = isNearBottom 
+            ? sections.length - 1 
+            : Math.floor(scrollPosition / windowHeight);
           
           if (currentSectionIndex >= 0 && currentSectionIndex < sections.length) {
             setActiveSection(sections[currentSectionIndex]);

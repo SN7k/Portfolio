@@ -72,7 +72,7 @@ export const Contact = () => {
     <section
       id="contact"
       ref={sectionRef}
-      className="min-h-screen flex items-center py-20 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-900 relative"
+      className="min-h-screen flex items-start sm:items-center py-20 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-900 relative"
     >
       <div className="container mx-auto px-4 sm:px-6 section-content">
         <div className="text-center mb-16">
