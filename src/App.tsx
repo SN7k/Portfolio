@@ -35,6 +35,8 @@ function PortfolioContent() {
     let touchStartY: number | null = null;
     let touchEndY: number | null = null;
     let lastTouchTime = 0;
+    let lastWheelTime = 0;
+    let wheelDirection = 0;
     
     // Function to smoothly scroll to a specific section
     const scrollToSection = (sectionIndex: number) => {
@@ -94,9 +96,47 @@ function PortfolioContent() {
       requestAnimationFrame(animateScroll);
     };
     
-    // Enhanced touch events for mobile devices with better detection and response
+    // Function to check if we need to move to the next section
+    const checkSectionTransition = (delta: number) => {
+      const currentSectionIndex = Math.round(window.scrollY / window.innerHeight);
+      const sections = ['hero', 'about', 'skills', 'projects', 'contact'];
+      
+      // Get the current section element
+      const sectionElements = Array.from(sectionsRef.current?.children || []);
+      const currentSectionElement = sectionElements[currentSectionIndex] as HTMLElement;
+      
+      if (!currentSectionElement) return;
+      
+      // Get the content height of the current section
+      const sectionContent = currentSectionElement.querySelector('section');
+      if (!sectionContent) return;
+      
+      const contentHeight = sectionContent.scrollHeight;
+      const viewportHeight = window.innerHeight;
+      const scrollPosition = window.scrollY;
+      
+      // Calculate the position within the current section
+      const sectionStart = currentSectionIndex * viewportHeight;
+      const sectionScrollPosition = scrollPosition - sectionStart;
+      
+      // If scrolling down and we're at the bottom of the section content, go to next section
+      if (delta > 0 && sectionScrollPosition >= contentHeight - viewportHeight - 10 && currentSectionIndex < sections.length - 1) {
+        scrollToSection(currentSectionIndex + 1);
+        return true;
+      }
+      
+      // If scrolling up and we're at the top of the section, go to previous section
+      if (delta < 0 && sectionScrollPosition <= 10 && currentSectionIndex > 0) {
+        scrollToSection(currentSectionIndex - 1);
+        return true;
+      }
+      
+      return false;
+    };
+    
+    // Enhanced touch events for mobile devices with continuous section flow
     const handleTouchStart = (e: TouchEvent) => {
-      // Store both X and Y coordinates for better swipe detection
+      // Store touch start position
       touchStartY = e.touches[0].clientY;
       touchEndY = null;
     };
@@ -104,6 +144,35 @@ function PortfolioContent() {
     const handleTouchMove = (e: TouchEvent) => {
       // Update end position during movement
       touchEndY = e.touches[0].clientY;
+      
+      // Check if we're at the edge of a section and should prevent default scrolling
+      if (touchStartY !== null && touchEndY !== null) {
+        const touchDelta = touchStartY - touchEndY;
+        const currentSectionIndex = Math.round(window.scrollY / window.innerHeight);
+        const sectionStart = currentSectionIndex * window.innerHeight;
+        const sectionElements = Array.from(sectionsRef.current?.children || []);
+        const currentSectionElement = sectionElements[currentSectionIndex] as HTMLElement;
+        
+        if (currentSectionElement) {
+          const sectionContent = currentSectionElement.querySelector('section');
+          if (sectionContent) {
+            const contentHeight = sectionContent.scrollHeight;
+            const viewportHeight = window.innerHeight;
+            const sectionScrollPosition = window.scrollY - sectionStart;
+            
+            // If at the bottom of content and swiping up, or at the top and swiping down,
+            // check if we should transition to the next/previous section
+            if ((sectionScrollPosition >= contentHeight - viewportHeight && touchDelta > 0) ||
+                (sectionScrollPosition <= 0 && touchDelta < 0)) {
+              // Prevent default only if we're at the edges of the document
+              if ((currentSectionIndex === 0 && touchDelta < 0) ||
+                  (currentSectionIndex === sectionElements.length - 1 && touchDelta > 0)) {
+                e.preventDefault();
+              }
+            }
+          }
+        }
+      }
     };
     
     const handleTouchEnd = () => {
@@ -113,37 +182,38 @@ function PortfolioContent() {
       const swipeDistance = touchStartY - touchEndY;
       const swipeDirection = swipeDistance > 0 ? 1 : -1; // 1 for up (next section), -1 for down (prev section)
       
-      // Adjust minimum swipe distance based on device height for better responsiveness
-      const minSwipeDistance = Math.min(50, window.innerHeight * 0.08); // Either 50px or 8% of screen height, whichever is smaller
-      
-      // Check if we should handle this swipe
-      if (Math.abs(swipeDistance) >= minSwipeDistance) {
-        // Prevent rapid consecutive swipes but use shorter delay on mobile
-        const now = Date.now();
-        const isMobile = window.innerWidth < 768;
-        const minSwipeInterval = isMobile ? 300 : 500; // Shorter interval on mobile for better responsiveness
+      // Check if we should transition between sections
+      if (checkSectionTransition(swipeDistance)) {
+        // Already handled by the transition function
+      } else {
+        // Handle normal swipe gestures for section changes
+        const minSwipeDistance = Math.min(50, window.innerHeight * 0.08);
         
-        if (now - lastTouchTime < minSwipeInterval) return;
-        lastTouchTime = now;
-        
-        // Get more accurate current section based on scroll position
-        const windowHeight = window.innerHeight;
-        const scrollPosition = window.scrollY;
-        const currentSection = Math.round(scrollPosition / windowHeight);
-        
-        // Calculate target section with bounds checking
-        const targetSection = Math.max(0, Math.min(4, currentSection + swipeDirection)); // Limit to 0-4 (5 sections)
-        
-        // Update the active section based on the target section index
-        const sectionIds = ['hero', 'about', 'skills', 'projects', 'contact'];
-        if (setActiveSection && targetSection >= 0 && targetSection < sectionIds.length) {
-          // Set the active section to match the section we're scrolling to
-          setActiveSection(sectionIds[targetSection] as any);
-        }
-        
-        // Only scroll if we're changing sections
-        if (targetSection !== currentSection) {
-          scrollToSection(targetSection);
+        if (Math.abs(swipeDistance) >= minSwipeDistance) {
+          // Prevent rapid consecutive swipes
+          const now = Date.now();
+          const isMobile = window.innerWidth < 768;
+          const minSwipeInterval = isMobile ? 300 : 500;
+          
+          if (now - lastTouchTime < minSwipeInterval) return;
+          lastTouchTime = now;
+          
+          // Get current section and calculate target section
+          const windowHeight = window.innerHeight;
+          const scrollPosition = window.scrollY;
+          const currentSection = Math.round(scrollPosition / windowHeight);
+          const targetSection = Math.max(0, Math.min(4, currentSection + swipeDirection));
+          
+          // Update active section
+          const sectionIds = ['hero', 'about', 'skills', 'projects', 'contact'];
+          if (setActiveSection && targetSection >= 0 && targetSection < sectionIds.length) {
+            setActiveSection(sectionIds[targetSection] as any);
+          }
+          
+          // Only scroll if we're changing sections
+          if (targetSection !== currentSection) {
+            scrollToSection(targetSection);
+          }
         }
       }
       
@@ -152,38 +222,58 @@ function PortfolioContent() {
       touchEndY = null;
     };
     
-    // Handle wheel events for snap scrolling with improved mobile support
+    // Enhanced wheel event handling for continuous scrolling between sections
     const handleWheel = (e: WheelEvent) => {
-      // Only handle wheel events if we're not already scrolling
-      if (isScrolling) {
+      // Prevent default only if we're handling section transitions
+      const now = Date.now();
+      const wheelDelay = 100; // Minimum time between wheel events to process
+      
+      // Track wheel direction for continuous scrolling
+      const newDirection = e.deltaY > 0 ? 1 : -1;
+      
+      // If direction changed or enough time passed, update direction
+      if (newDirection !== wheelDirection || now - lastWheelTime > wheelDelay) {
+        wheelDirection = newDirection;
+      }
+      
+      // Throttle wheel events to prevent too many transitions
+      if (now - lastWheelTime < wheelDelay) {
+        return;
+      }
+      
+      lastWheelTime = now;
+      
+      // Check if we need to transition to another section
+      if (checkSectionTransition(e.deltaY)) {
         e.preventDefault();
         return;
       }
       
-      e.preventDefault();
+      // If we're at the top or bottom of a section, prevent overscroll bounce
+      const currentSectionIndex = Math.round(window.scrollY / window.innerHeight);
+      const sectionStart = currentSectionIndex * window.innerHeight;
+      const sectionElements = Array.from(sectionsRef.current?.children || []);
+      const currentSectionElement = sectionElements[currentSectionIndex] as HTMLElement;
       
-      // Clear any existing timeout
-      if (scrollTimeout) {
-        clearTimeout(scrollTimeout);
-      }
-      
-      // Set a timeout to prevent multiple scroll events
-      // Use a shorter timeout on mobile for better responsiveness
-      const isMobile = window.innerWidth < 768;
-      scrollTimeout = window.setTimeout(() => {
-        const currentSection = Math.round(window.scrollY / window.innerHeight);
-        const direction = e.deltaY > 0 ? 1 : -1; // 1 for down, -1 for up
-        const targetSection = Math.max(0, Math.min(4, currentSection + direction)); // Limit to 0-4 (5 sections)
-        
-        // Update the active section based on the target section index
-        const sectionIds = ['hero', 'about', 'skills', 'projects', 'contact'];
-        if (setActiveSection && targetSection >= 0 && targetSection < sectionIds.length) {
-          // Set the active section to match the section we're scrolling to
-          setActiveSection(sectionIds[targetSection] as any);
+      if (currentSectionElement) {
+        const sectionContent = currentSectionElement.querySelector('section');
+        if (sectionContent) {
+          const contentHeight = sectionContent.scrollHeight;
+          const viewportHeight = window.innerHeight;
+          const sectionScrollPosition = window.scrollY - sectionStart;
+          
+          // At the top of the section and scrolling up
+          if (sectionScrollPosition <= 0 && e.deltaY < 0 && currentSectionIndex === 0) {
+            e.preventDefault();
+          }
+          
+          // At the bottom of the section and scrolling down
+          if (sectionScrollPosition >= contentHeight - viewportHeight && e.deltaY > 0 && 
+              currentSectionIndex === sectionElements.length - 1) {
+            e.preventDefault();
+          }
         }
-        
-        scrollToSection(targetSection);
-      }, isMobile ? 50 : 100); // Faster response on mobile
+      }
     };
     
     // Add event listeners for both touch and wheel events
@@ -223,9 +313,6 @@ function PortfolioContent() {
         // 0% = just starting to come into view, 100% = fully in view
         const shouldBeTransparent = sectionScrollPercentage < 45; // Transparent until 45% scrolled
         
-        // Check if we're on mobile
-        const isMobile = window.innerWidth < 768;
-        
         if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
           // Current section - stays fixed and fully opaque
           sectionElement.style.position = 'fixed';
@@ -237,7 +324,6 @@ function PortfolioContent() {
           sectionElement.style.opacity = '1'; // Fully opaque when active
           sectionElement.style.zIndex = String(10 + index); // Increasing z-index for each section
           sectionElement.style.backgroundColor = index === 0 ? '' : (isDarkMode ? darkBg : lightBg); // Slight transparency for non-hero sections
-          sectionElement.style.overflow = isMobile ? 'auto' : 'hidden'; // Allow scrolling within sections on mobile
         } else if (scrollPosition < sectionTop) {
           // Sections below - prepare to slide up
           sectionElement.style.position = 'fixed';
@@ -253,7 +339,6 @@ function PortfolioContent() {
             : shouldBeTransparent 
               ? (isDarkMode ? 'rgba(17, 24, 39, 0.7)' : 'rgba(255, 255, 255, 0.7)')
               : (isDarkMode ? 'rgb(17, 24, 39)' : 'rgb(255, 255, 255)');
-          sectionElement.style.overflow = isMobile ? 'auto' : 'hidden'; // Allow scrolling within sections on mobile
         } else {
           // Sections above - keep them visible at the top
           sectionElement.style.position = 'fixed';
@@ -267,7 +352,6 @@ function PortfolioContent() {
           sectionElement.style.backgroundColor = index === 0 
             ? '' 
             : (isDarkMode ? 'rgb(17, 24, 39)' : 'rgb(255, 255, 255)'); // Fully opaque
-          sectionElement.style.overflow = isMobile ? 'auto' : 'hidden'; // Allow scrolling within sections on mobile
         }
 
         // Create sliding card effect for the next section
