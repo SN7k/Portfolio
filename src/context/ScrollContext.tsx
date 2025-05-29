@@ -143,12 +143,35 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
         if (sectionContent) {
           const contentHeight = sectionContent.scrollHeight;
           const viewportHeight = window.innerHeight;
-          return contentHeight > viewportHeight - 80; // Reduced padding for better detection
+          return contentHeight > viewportHeight - 50; // Further reduced padding for better detection
         }
       }
     }
     
     return false;
+  };
+  
+  // Function to ensure the last section is fully visible
+  const ensureLastSectionFullyVisible = () => {
+    const sectionIds = ['hero', 'about', 'skills', 'projects', 'contact'];
+    const lastSectionId = sectionIds[sectionIds.length - 1];
+    const lastSection = document.getElementById(lastSectionId);
+    
+    if (lastSection && isMobileView) {
+      // Calculate how much of the last section is visible
+      const rect = lastSection.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const visibleHeight = Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0);
+      const sectionHeight = lastSection.offsetHeight;
+      
+      // If less than 90% of the section is visible, scroll to show it fully
+      if (visibleHeight / sectionHeight < 0.9) {
+        window.scrollTo({
+          top: document.body.scrollHeight - window.innerHeight,
+          behavior: 'smooth'
+        });
+      }
+    }
   };
 
   // Handle touch events for mobile scrolling
@@ -175,6 +198,12 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
     const handleTouchEnd = () => {
       // Don't handle touch end if content overflows in mobile view
       if (isMobileView && checkContentOverflow()) {
+        // For the last section, ensure it's fully visible even with slow swipes
+        const currentSectionIndex = Math.round(window.scrollY / window.innerHeight);
+        const sectionIds: Section[] = ['hero', 'about', 'skills', 'projects', 'contact'];
+        if (currentSectionIndex === sectionIds.length - 1) {
+          ensureLastSectionFullyVisible();
+        }
         return;
       }
       
@@ -185,7 +214,16 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
       const swipeDirection = swipeDistance > 0 ? 1 : -1; // 1 for up (next section), -1 for down (prev section)
       
       // Optimize swipe distance threshold for mobile to balance sensitivity and accuracy
-      const minSwipeDistance = isMobileView ? 60 : 50; // Slightly lower threshold for better responsiveness
+      // Use a lower threshold for slow swipes to the last section
+      const sectionIds: Section[] = ['hero', 'about', 'skills', 'projects', 'contact'];
+      const currentSectionIndex = Math.round(window.scrollY / window.innerHeight);
+      const isSecondLastSection = currentSectionIndex === sectionIds.length - 2;
+      const isUpwardSwipe = swipeDirection > 0;
+      
+      // Lower threshold for upward swipes to the last section
+      const minSwipeDistance = (isMobileView && isSecondLastSection && isUpwardSwipe) 
+        ? 40 // Even lower threshold for swiping to the last section
+        : isMobileView ? 60 : 50;
       
       // Check if we should handle this swipe
       if (Math.abs(swipeDistance) >= minSwipeDistance) {
@@ -194,16 +232,25 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
         if (now - lastTouchTime.current < 500) return; // Reduced minimum time between swipes for better responsiveness
         lastTouchTime.current = now;
         
-        // Calculate current section and target section
-        const currentSectionIndex = Math.round(window.scrollY / window.innerHeight);
-        const sectionIds: Section[] = ['hero', 'about', 'skills', 'projects', 'contact'];
-        
         // Calculate target section index with bounds checking
         const targetSectionIndex = Math.max(0, Math.min(sectionIds.length - 1, currentSectionIndex + swipeDirection));
         
         // Only scroll if we're changing sections
         if (targetSectionIndex !== currentSectionIndex) {
+          // If we're going to the last section, make sure it's fully visible
+          const goingToLastSection = targetSectionIndex === sectionIds.length - 1;
           scrollToSection(sectionIds[targetSectionIndex]);
+          
+          // For the last section, ensure it's fully visible after a short delay
+          if (goingToLastSection && isMobileView) {
+            setTimeout(() => ensureLastSectionFullyVisible(), 300);
+          }
+        }
+      } else if (isMobileView) {
+        // Even for small swipes, check if we need to ensure the last section is fully visible
+        const isLastOrNearLastSection = currentSectionIndex >= sectionIds.length - 2;
+        if (isLastOrNearLastSection && isUpwardSwipe) {
+          ensureLastSectionFullyVisible();
         }
       }
       
@@ -229,19 +276,26 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
       scrollTimeoutRef.current = window.setTimeout(() => {
         if (isScrolling) return;
         
+        const sectionIds: Section[] = ['hero', 'about', 'skills', 'projects', 'contact'];
+        const isLastSection = Math.round(scrollPosition / windowHeight) === sectionIds.length - 1;
+        
+        // For the last section on mobile, always ensure it's fully visible
+        if (isMobileView && isLastSection) {
+          ensureLastSectionFullyVisible();
+        }
+        
         // Skip snapping if on mobile with content overflow
         if (isMobileView && checkContentOverflow()) {
           // Just update the active section without snapping
-          const sections: Section[] = ['hero', 'about', 'skills', 'projects', 'contact'];
           
           // Special handling for the last section to ensure it's properly detected
           const isNearBottom = scrollPosition + windowHeight >= document.body.scrollHeight - 50;
           const currentSectionIndex = isNearBottom 
-            ? sections.length - 1 
+            ? sectionIds.length - 1 
             : Math.floor(scrollPosition / windowHeight);
           
-          if (currentSectionIndex >= 0 && currentSectionIndex < sections.length) {
-            setActiveSection(sections[currentSectionIndex]);
+          if (currentSectionIndex >= 0 && currentSectionIndex < sectionIds.length) {
+            setActiveSection(sectionIds[currentSectionIndex]);
           }
           return;
         }
