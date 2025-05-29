@@ -45,9 +45,9 @@ function PortfolioContent() {
       const startPosition = window.scrollY;
       const distance = targetY - startPosition;
       
-      // Faster and more responsive scrolling for mobile devices
+      // Optimized scrolling for mobile devices
       const isMobile = window.innerWidth < 768;
-      const duration = isMobile ? 300 : 600; // Even faster on mobile
+      const duration = isMobile ? 250 : 600; // Much faster on mobile for better responsiveness
       let startTime: number;
       
       // Smooth scroll animation function with improved mobile performance
@@ -60,8 +60,8 @@ function PortfolioContent() {
         let easeProgress;
         
         if (isMobile) {
-          // Faster, more direct easing for mobile
-          easeProgress = 1 - Math.pow(1 - progress, 3);
+          // Linear easing for mobile - most responsive and predictable
+          easeProgress = progress;
         } else {
           // Smoother easing for desktop
           easeProgress = progress < 0.5 
@@ -86,7 +86,7 @@ function PortfolioContent() {
           // Reset scrolling state after a shorter delay on mobile
           setTimeout(() => {
             isScrolling = false;
-          }, isMobile ? 50 : 100);
+          }, isMobile ? 30 : 100);
         }
       };
       
@@ -94,13 +94,15 @@ function PortfolioContent() {
       requestAnimationFrame(animateScroll);
     };
     
-    // Handle touch events for mobile devices
+    // Enhanced touch events for mobile devices with better detection and response
     const handleTouchStart = (e: TouchEvent) => {
+      // Store both X and Y coordinates for better swipe detection
       touchStartY = e.touches[0].clientY;
       touchEndY = null;
     };
     
     const handleTouchMove = (e: TouchEvent) => {
+      // Update end position during movement
       touchEndY = e.touches[0].clientY;
     };
     
@@ -111,18 +113,25 @@ function PortfolioContent() {
       const swipeDistance = touchStartY - touchEndY;
       const swipeDirection = swipeDistance > 0 ? 1 : -1; // 1 for up (next section), -1 for down (prev section)
       
-      // Only trigger if the swipe is significant enough (prevent accidental swipes)
-      const minSwipeDistance = 50; // Minimum pixels to consider it a swipe
+      // Adjust minimum swipe distance based on device height for better responsiveness
+      const minSwipeDistance = Math.min(50, window.innerHeight * 0.08); // Either 50px or 8% of screen height, whichever is smaller
       
       // Check if we should handle this swipe
       if (Math.abs(swipeDistance) >= minSwipeDistance) {
-        // Prevent rapid consecutive swipes
+        // Prevent rapid consecutive swipes but use shorter delay on mobile
         const now = Date.now();
-        if (now - lastTouchTime < 500) return; // Minimum 500ms between swipes
+        const isMobile = window.innerWidth < 768;
+        const minSwipeInterval = isMobile ? 300 : 500; // Shorter interval on mobile for better responsiveness
+        
+        if (now - lastTouchTime < minSwipeInterval) return;
         lastTouchTime = now;
         
-        // Calculate current section and target section
-        const currentSection = Math.round(window.scrollY / window.innerHeight);
+        // Get more accurate current section based on scroll position
+        const windowHeight = window.innerHeight;
+        const scrollPosition = window.scrollY;
+        const currentSection = Math.round(scrollPosition / windowHeight);
+        
+        // Calculate target section with bounds checking
         const targetSection = Math.max(0, Math.min(4, currentSection + swipeDirection)); // Limit to 0-4 (5 sections)
         
         // Update the active section based on the target section index
@@ -214,18 +223,28 @@ function PortfolioContent() {
         // 0% = just starting to come into view, 100% = fully in view
         const shouldBeTransparent = sectionScrollPercentage < 45; // Transparent until 45% scrolled
         
+        // Check if we're on mobile
+        const isMobile = window.innerWidth < 768;
+        
         if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
           // Current section - stays fixed and fully opaque
           sectionElement.style.position = 'fixed';
           sectionElement.style.top = '0';
+          sectionElement.style.left = '0';
+          sectionElement.style.width = '100%';
+          sectionElement.style.height = '100vh';
           sectionElement.style.transform = 'translateY(0)';
           sectionElement.style.opacity = '1'; // Fully opaque when active
           sectionElement.style.zIndex = String(10 + index); // Increasing z-index for each section
           sectionElement.style.backgroundColor = index === 0 ? '' : (isDarkMode ? darkBg : lightBg); // Slight transparency for non-hero sections
+          sectionElement.style.overflow = isMobile ? 'auto' : 'hidden'; // Allow scrolling within sections on mobile
         } else if (scrollPosition < sectionTop) {
           // Sections below - prepare to slide up
           sectionElement.style.position = 'fixed';
           sectionElement.style.top = '0';
+          sectionElement.style.left = '0';
+          sectionElement.style.width = '100%';
+          sectionElement.style.height = '100vh';
           sectionElement.style.transform = 'translateY(100%)';
           sectionElement.style.opacity = shouldBeTransparent ? '0.7' : '1'; // Transparent until 45% scrolled
           sectionElement.style.zIndex = String(10 + index);
@@ -234,16 +253,21 @@ function PortfolioContent() {
             : shouldBeTransparent 
               ? (isDarkMode ? 'rgba(17, 24, 39, 0.7)' : 'rgba(255, 255, 255, 0.7)')
               : (isDarkMode ? 'rgb(17, 24, 39)' : 'rgb(255, 255, 255)');
+          sectionElement.style.overflow = isMobile ? 'auto' : 'hidden'; // Allow scrolling within sections on mobile
         } else {
           // Sections above - keep them visible at the top
           sectionElement.style.position = 'fixed';
           sectionElement.style.top = '0';
+          sectionElement.style.left = '0';
+          sectionElement.style.width = '100%';
+          sectionElement.style.height = '100vh';
           sectionElement.style.transform = 'translateY(0)'; // Keep in place
           sectionElement.style.opacity = '1'; // Fully opaque when scrolled past
           sectionElement.style.zIndex = String(10 + index - 5); // Lower z-index so newer sections appear on top
           sectionElement.style.backgroundColor = index === 0 
             ? '' 
             : (isDarkMode ? 'rgb(17, 24, 39)' : 'rgb(255, 255, 255)'); // Fully opaque
+          sectionElement.style.overflow = isMobile ? 'auto' : 'hidden'; // Allow scrolling within sections on mobile
         }
 
         // Create sliding card effect for the next section
@@ -274,14 +298,30 @@ function PortfolioContent() {
     window.addEventListener('scroll', handleScroll);
     handleScroll(); // Initial call
 
-    // Set the main container height
-    if (sectionsRef.current) {
-      sectionsRef.current.style.height = `${window.innerHeight * 5}px`; // 5 sections
-    }
+    // Set the main container height and handle resize events
+    const updateContainerHeight = () => {
+      if (sectionsRef.current) {
+        sectionsRef.current.style.height = `${window.innerHeight * 5}px`; // 5 sections
+      }
+    };
+    
+    // Initial height setup
+    updateContainerHeight();
+    
+    // Add resize listener to adjust height when window size changes
+    window.addEventListener('resize', updateContainerHeight);
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('resize', updateContainerHeight);
+      
+      if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+      }
     };
   }, []);
 

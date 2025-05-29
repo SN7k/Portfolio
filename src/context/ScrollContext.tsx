@@ -58,7 +58,7 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
       
       // Optimize for mobile - faster and more responsive
       const mobile = isMobile();
-      const duration = mobile ? 300 : 600; // Even faster on mobile
+      const duration = mobile ? 200 : 600; // Much faster on mobile for better responsiveness
       let startTime: number;
       
       // Update active section immediately
@@ -74,8 +74,8 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
         let easeProgress;
         
         if (mobile) {
-          // Faster, more direct easing for mobile
-          easeProgress = 1 - Math.pow(1 - progress, 3);
+          // Linear easing for mobile - most responsive and predictable
+          easeProgress = progress;
         } else {
           // Smoother easing for desktop
           easeProgress = progress < 0.5 
@@ -99,7 +99,7 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
           
           // Reset scrolling state after a short delay
           // Use a shorter delay on mobile for better responsiveness
-          setTimeout(() => setIsScrolling(false), mobile ? 50 : 100);
+          setTimeout(() => setIsScrolling(false), mobile ? 30 : 100);
         }
       };
       
@@ -108,15 +108,30 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
     }
   };
 
-  // Handle touch events for mobile scrolling
+  // Enhanced touch events for mobile scrolling
   useEffect(() => {
     const handleTouchStart = (e: TouchEvent) => {
+      // Store touch start position
       touchStartY.current = e.touches[0].clientY;
       touchEndY.current = null;
     };
 
     const handleTouchMove = (e: TouchEvent) => {
+      // Update end position during movement
       touchEndY.current = e.touches[0].clientY;
+      
+      // Prevent default only if we're not in an input field or scrollable area
+      const target = e.target as HTMLElement;
+      const isFormElement = target.tagName === 'INPUT' || 
+                           target.tagName === 'TEXTAREA' || 
+                           target.tagName === 'SELECT' ||
+                           target.closest('form') !== null;
+                           
+      // Allow scrolling within scrollable elements
+      if (!isFormElement && !isScrolling) {
+        // Optional: prevent default to reduce browser interference
+        // e.preventDefault();
+      }
     };
 
     const handleTouchEnd = () => {
@@ -126,18 +141,23 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
       const swipeDistance = touchStartY.current - touchEndY.current;
       const swipeDirection = swipeDistance > 0 ? 1 : -1; // 1 for up (next section), -1 for down (prev section)
       
-      // Only trigger if the swipe is significant enough (prevent accidental swipes)
-      const minSwipeDistance = 50; // Minimum pixels to consider it a swipe
+      // Adjust minimum swipe distance based on device height for better responsiveness
+      const minSwipeDistance = Math.min(50, window.innerHeight * 0.08); // Either 50px or 8% of screen height, whichever is smaller
       
       // Check if we should handle this swipe
       if (Math.abs(swipeDistance) >= minSwipeDistance) {
-        // Prevent rapid consecutive swipes
+        // Prevent rapid consecutive swipes with shorter delay on mobile
         const now = Date.now();
-        if (now - lastTouchTime.current < 500) return; // Minimum 500ms between swipes
+        const mobile = isMobile();
+        const minSwipeInterval = mobile ? 300 : 500; // Shorter interval on mobile for better responsiveness
+        
+        if (now - lastTouchTime.current < minSwipeInterval) return;
         lastTouchTime.current = now;
         
-        // Calculate current section and target section
-        const currentSectionIndex = Math.round(window.scrollY / window.innerHeight);
+        // Get more accurate current section based on scroll position
+        const windowHeight = window.innerHeight;
+        const scrollPosition = window.scrollY;
+        const currentSectionIndex = Math.round(scrollPosition / windowHeight);
         const sectionIds: Section[] = ['hero', 'about', 'skills', 'projects', 'contact'];
         
         // Calculate target section index with bounds checking
@@ -167,6 +187,10 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
       }
       
       // Set a timeout to snap to the nearest section after scrolling stops
+      // Use a shorter timeout on mobile for better responsiveness
+      const mobile = isMobile();
+      const snapDelay = mobile ? 100 : 150;
+      
       scrollTimeoutRef.current = window.setTimeout(() => {
         if (isScrolling) return;
         
@@ -182,15 +206,18 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
           const targetY = currentSectionIndex * windowHeight;
           const distance = Math.abs(scrollPosition - targetY);
           
+          // Adjust snap threshold for mobile - use smaller threshold for more precise snapping
+          const snapThreshold = mobile ? windowHeight * 0.2 : windowHeight * 0.3;
+          
           // Only snap if we're close but not exactly on a section boundary
-          if (distance > 10 && distance < windowHeight * 0.3) {
+          if (distance > 5 && distance < snapThreshold) {
             window.scrollTo({
               top: targetY,
-              behavior: isMobile() ? 'auto' : 'smooth'
+              behavior: 'auto' // Always use auto for consistent behavior
             });
           }
         }
-      }, 150);
+      }, snapDelay);
     };
 
     // Add event listeners for both touch and scroll
