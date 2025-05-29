@@ -54,7 +54,7 @@ export const Contact = () => {
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.2 }
     );
 
     if (sectionRef.current) {
@@ -72,10 +72,10 @@ export const Contact = () => {
     <section
       id="contact"
       ref={sectionRef}
-      className="min-h-screen flex flex-col justify-center py-10 sm:py-16 md:py-20 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-900 relative"
+      className="min-h-screen flex items-center py-20 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-900 relative"
     >
-      <div className="container mx-auto px-4 sm:px-6 pb-10 sm:pb-0">
-        <div className="text-center mb-8 sm:mb-12 md:mb-16">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="text-center mb-16">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 md:mb-4">
             Get In <span className="text-blue-600 dark:text-blue-400">Touch</span>
           </h2>
@@ -85,10 +85,10 @@ export const Contact = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10 lg:gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 lg:gap-12">
           <form
             ref={formRef}
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 md:p-8 opacity-0 transform translate-x-[-50px] transition-all duration-700 ease-out h-auto"
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 md:p-8 opacity-0 transform translate-x-[-50px] transition-all duration-700 ease-out"
             onSubmit={handleSubmit}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -175,7 +175,7 @@ export const Contact = () => {
             ref={infoRef}
             className="opacity-0 transform translate-x-[50px] transition-all duration-700 ease-out"
           >
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 md:p-8 h-full">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 h-full">
               <h3 className="text-2xl font-semibold mb-6 text-gray-900 dark:text-white">
                 Contact Information
               </h3>
@@ -184,7 +184,7 @@ export const Contact = () => {
                 I'm typically able to respond within 24 hours.
               </p>
 
-              <div className="space-y-4 sm:space-y-6">
+              <div className="space-y-6">
                 <div className="flex items-start">
                   <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center text-blue-600 dark:text-blue-400 mr-4 flex-shrink-0">
                     <Mail size={24} />
@@ -226,7 +226,7 @@ export const Contact = () => {
                 </div>
               </div>
 
-              <div className="mt-6 sm:mt-8 md:mt-10">
+              <div className="mt-10">
                 <h4 className="font-medium text-gray-900 dark:text-white mb-4">Connect with me</h4>
                 <div className="flex space-x-4">
                   <a
