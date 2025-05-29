@@ -12,6 +12,19 @@ export const Contact = () => {
     message: '',
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
+  
+  // Function to ensure this section is fully visible on mobile
+  const ensureFullVisibility = () => {
+    if (window.innerWidth < 768) { // Mobile check
+      // Force scroll to show this section fully
+      const yOffset = -20; // Small offset to account for any padding
+      const element = sectionRef.current;
+      if (element) {
+        const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({top: y, behavior: 'auto'});
+      }
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -37,10 +50,36 @@ export const Contact = () => {
   };
 
   useEffect(() => {
+    // Ensure full visibility when on mobile
+    if (window.innerWidth < 768) {
+      // Add a small delay to ensure DOM is ready
+      setTimeout(ensureFullVisibility, 100);
+      
+      // Also add scroll event listener to ensure visibility during scrolling
+      const handleScroll = () => {
+        // Check if we're near the bottom of the page
+        const scrollPosition = window.scrollY;
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.body.scrollHeight;
+        
+        if (documentHeight - (scrollPosition + windowHeight) < 100) {
+          // We're near the bottom, ensure this section is fully visible
+          ensureFullVisibility();
+        }
+      };
+      
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      return () => window.removeEventListener('scroll', handleScroll);
+    }
+    
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
+            // When this section becomes visible, ensure it's fully visible on mobile
+            if (window.innerWidth < 768) {
+              ensureFullVisibility();
+            }
             if (formRef.current) {
               formRef.current.style.opacity = '1';
               formRef.current.style.transform = 'translateX(0)';
@@ -72,7 +111,8 @@ export const Contact = () => {
     <section
       id="contact"
       ref={sectionRef}
-      className="min-h-screen flex flex-col items-start justify-start sm:items-center sm:justify-center py-20 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-900 relative"
+      className="min-h-screen flex flex-col items-start justify-start sm:items-center sm:justify-center py-20 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-900 relative scroll-mt-20"
+      style={{ scrollMarginTop: '20px' }} // Additional scroll margin for better positioning
     >
       <div className="container mx-auto px-4 sm:px-6 section-content">
         <div className="text-center mb-16">

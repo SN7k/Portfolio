@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom styles for better mobile scrolling */
+@media (max-width: 767px) {
+  #contact {
+    scroll-snap-align: start;
+    scroll-margin-top: 0;
+    padding-bottom: 100px; /* Extra padding to ensure content is visible */
+  }
+}
+
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 80px;

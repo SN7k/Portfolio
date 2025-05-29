@@ -158,19 +158,22 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
     const lastSection = document.getElementById(lastSectionId);
     
     if (lastSection && isMobileView) {
-      // Calculate how much of the last section is visible
-      const rect = lastSection.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const visibleHeight = Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0);
-      const sectionHeight = lastSection.offsetHeight;
-      
-      // If less than 90% of the section is visible, scroll to show it fully
-      if (visibleHeight / sectionHeight < 0.9) {
+      // More aggressive approach for production environment
+      // Force scroll to the bottom of the page minus viewport height
+      // This ensures the last section is always fully visible
+      const scrollToBottom = () => {
+        // Use a small offset to ensure we're at the very bottom
+        const bottomPosition = document.body.scrollHeight - window.innerHeight - 10;
         window.scrollTo({
-          top: document.body.scrollHeight - window.innerHeight,
-          behavior: 'smooth'
+          top: bottomPosition,
+          behavior: 'auto' // Use auto instead of smooth for more reliable behavior
         });
-      }
+      };
+      
+      // Execute immediately and then again after a short delay to ensure it works
+      scrollToBottom();
+      setTimeout(scrollToBottom, 50);
+      setTimeout(scrollToBottom, 200); // Additional attempt for more reliability
     }
   };
 
