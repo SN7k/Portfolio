@@ -4,10 +4,34 @@
 
 /* Custom styles for better mobile scrolling */
 @media (max-width: 767px) {
+  html, body {
+    height: 100%;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: auto; /* Use auto instead of smooth for more reliable behavior */
+  }
+  
   #contact {
     scroll-snap-align: start;
     scroll-margin-top: 0;
-    padding-bottom: 100px; /* Extra padding to ensure content is visible */
+    padding-bottom: 120px; /* Extra padding to ensure content is visible */
+    margin-bottom: 0;
+    position: relative;
+    z-index: 10; /* Ensure it's above other elements */
+  }
+  
+  /* Improve form display on mobile */
+  #contact form {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  
+  /* Improve contact info display on mobile */
+  #contact [ref=infoRef] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
   }
 }
 

@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Send, Mail, PhoneCall, MapPin } from 'lucide-react';
+import { useScroll } from '../../context/ScrollContext';
 
 export const Contact = () => {
+  const { isMobileView } = useScroll(); // Get mobile view state from context
   const sectionRef = useRef<HTMLElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const infoRef = useRef<HTMLDivElement>(null);
@@ -12,17 +14,18 @@ export const Contact = () => {
     message: '',
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   
-  // Function to ensure this section is fully visible on mobile
-  const ensureFullVisibility = () => {
-    if (window.innerWidth < 768) { // Mobile check
-      // Force scroll to show this section fully
-      const yOffset = -20; // Small offset to account for any padding
-      const element = sectionRef.current;
-      if (element) {
-        const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-        window.scrollTo({top: y, behavior: 'auto'});
-      }
+  // Function to force scroll to bottom on mobile
+  const forceScrollToBottom = () => {
+    if (window.innerWidth < 768) {
+      // Force scroll to bottom of page
+      window.scrollTo(0, document.body.scrollHeight);
+      
+      // Try again after a delay to ensure it works
+      setTimeout(() => {
+        window.scrollTo(0, document.body.scrollHeight);
+      }, 100);
     }
   };
 
@@ -49,36 +52,43 @@ export const Contact = () => {
     }, 5000);
   };
 
+  // Effect to handle component mount
   useEffect(() => {
-    // Ensure full visibility when on mobile
-    if (window.innerWidth < 768) {
-      // Add a small delay to ensure DOM is ready
-      setTimeout(ensureFullVisibility, 100);
+    setIsMounted(true);
+    
+    // For mobile, force scroll to bottom when this component mounts
+    if (isMobileView) {
+      forceScrollToBottom();
       
-      // Also add scroll event listener to ensure visibility during scrolling
+      // Add scroll event listener to keep forcing scroll to bottom
       const handleScroll = () => {
-        // Check if we're near the bottom of the page
+        // If we're close to the bottom, force scroll all the way
         const scrollPosition = window.scrollY;
         const windowHeight = window.innerHeight;
         const documentHeight = document.body.scrollHeight;
         
-        if (documentHeight - (scrollPosition + windowHeight) < 100) {
-          // We're near the bottom, ensure this section is fully visible
-          ensureFullVisibility();
+        if (documentHeight - (scrollPosition + windowHeight) < 150) {
+          forceScrollToBottom();
         }
       };
       
       window.addEventListener('scroll', handleScroll, { passive: true });
       return () => window.removeEventListener('scroll', handleScroll);
     }
+  }, [isMobileView]);
+  
+  // Effect to handle animations
+  useEffect(() => {
+    // Only run animations if component is mounted
+    if (!isMounted) return;
     
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            // When this section becomes visible, ensure it's fully visible on mobile
-            if (window.innerWidth < 768) {
-              ensureFullVisibility();
+            // When this section becomes visible on mobile, force scroll to bottom
+            if (isMobileView) {
+              forceScrollToBottom();
             }
             if (formRef.current) {
               formRef.current.style.opacity = '1';
@@ -111,8 +121,8 @@ export const Contact = () => {
     <section
       id="contact"
       ref={sectionRef}
-      className="min-h-screen flex flex-col items-start justify-start sm:items-center sm:justify-center py-20 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-900 relative scroll-mt-20"
-      style={{ scrollMarginTop: '20px' }} // Additional scroll margin for better positioning
+      className={`${isMobileView ? 'pt-10 pb-32' : 'min-h-screen py-20'} flex flex-col items-start justify-start sm:items-center sm:justify-center bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-900 relative`}
+      style={isMobileView ? { marginBottom: '-1px' } : undefined} // Ensure no gap at bottom on mobile
     >
       <div className="container mx-auto px-4 sm:px-6 section-content">
         <div className="text-center mb-16">
