@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { User, Calendar, MapPin, Briefcase } from 'lucide-react';
 
 export const About = () => {
@@ -44,8 +44,8 @@ export const About = () => {
       ref={sectionRef}
       className="min-h-screen flex items-center py-20 bg-white dark:bg-gray-900 relative"
     >
-      <div className="container mx-auto px-4 sm:px-6 section-content">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
+      <div className="container mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div
             ref={imageRef}
             className="opacity-0 transform translate-x-[-50px] transition-all duration-700 ease-out"
@@ -53,9 +53,9 @@ export const About = () => {
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/20 to-cyan-500/20 dark:from-blue-500/10 dark:to-cyan-400/10 rounded-2xl transform rotate-3"></div>
               <img
-                src="https://i.postimg.cc/pTck3dRb/oqg6smwpx0ib1.webp"
+                src="https://images.pexels.com/photos/1516680/pexels-photo-1516680.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
                 alt="John Doe"
-                className="rounded-2xl shadow-xl relative z-10 object-cover w-full h-[350px] sm:h-[400px] md:h-[500px]"
+                className="rounded-2xl shadow-xl relative z-10 object-cover w-full h-[500px]"
               />
             </div>
           </div>
@@ -64,14 +64,16 @@ export const About = () => {
             ref={contentRef}
             className="opacity-0 transform translate-x-[50px] transition-all duration-700 ease-out"
           >
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 md:mb-6">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
               <span className="text-gray-900 dark:text-white">About</span>{' '}
               <span className="text-blue-600 dark:text-blue-400">Me</span>
             </h2>
-            <p className="text-gray-700 dark:text-gray-300 text-base sm:text-lg mb-4 md:mb-6 leading-relaxed">
-            I’m a passionate full-stack web developer with a strong focus on creating clean, responsive, and user-friendly web applications. I love turning ideas into real-world solutions using modern technologies like the MERN stack. With a strong interest in both development and cybersecurity, I strive to build secure, scalable, and impactful digital experiences that combine functionality with great design.
+            <p className="text-gray-700 dark:text-gray-300 text-lg mb-6 leading-relaxed">
+              I'm a passionate developer with a love for creating beautiful, functional websites and applications. With over 5 years of experience in web development, I specialize in building modern, responsive interfaces that deliver exceptional user experiences.
             </p>
-           
+            <p className="text-gray-700 dark:text-gray-300 text-lg mb-8 leading-relaxed">
+              My journey in technology began when I built my first website at 14. Since then, I've worked with various technologies and frameworks to deliver solutions that not only look great but also solve real problems for users and businesses.
+            </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex items-center space-x-4">
@@ -80,7 +82,7 @@ export const About = () => {
                 </div>
                 <div>
                   <h3 className="font-medium text-gray-900 dark:text-white">Name</h3>
-                  <p className="text-gray-600 dark:text-gray-400">Shombhunath Karan</p>
+                  <p className="text-gray-600 dark:text-gray-400">John Doe</p>
                 </div>
               </div>
 
@@ -90,7 +92,7 @@ export const About = () => {
                 </div>
                 <div>
                   <h3 className="font-medium text-gray-900 dark:text-white">Experience</h3>
-                  <p className="text-gray-600 dark:text-gray-400">1+ Years</p>
+                  <p className="text-gray-600 dark:text-gray-400">5+ Years</p>
                 </div>
               </div>
 
@@ -100,7 +102,7 @@ export const About = () => {
                 </div>
                 <div>
                   <h3 className="font-medium text-gray-900 dark:text-white">Location</h3>
-                  <p className="text-gray-600 dark:text-gray-400">Kolkata,India</p>
+                  <p className="text-gray-600 dark:text-gray-400">San Francisco, CA</p>
                 </div>
               </div>
 
@@ -110,7 +112,7 @@ export const About = () => {
                 </div>
                 <div>
                   <h3 className="font-medium text-gray-900 dark:text-white">Available for</h3>
-                  <p className="text-gray-600 dark:text-gray-400">Freelance & Part-time</p>
+                  <p className="text-gray-600 dark:text-gray-400">Freelance & Full-time</p>
                 </div>
               </div>
             </div>

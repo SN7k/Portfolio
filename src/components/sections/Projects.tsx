@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ExternalLink, Github } from 'lucide-react';
 
 interface Project {
@@ -25,12 +25,12 @@ export const Projects = () => {
       repoLink: '#',
     },
     {
-      title: 'BusSeva Kolkata',
-      description: 'BusSeva Kolkata is a simple and reliable platform to explore bus routes, stops, and timings across Kolkata.',
-      image: 'https://i.ibb.co/1G54fRcW/Screenshot-2025-05-28-225300.png',
+      title: 'Task Management App',
+      description: 'A productivity tool for organizing tasks with drag-and-drop functionality and team collaboration features.',
+      image: 'https://images.pexels.com/photos/1029757/pexels-photo-1029757.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
       tags: ['React', 'Firebase', 'Tailwind CSS'],
-      liveLink: 'https://bussevakolkata.site/',
-      repoLink: 'https://github.com/Busseva-Kolkata',
+      liveLink: '#',
+      repoLink: '#',
     },
     {
       title: 'Weather Dashboard',
@@ -80,15 +80,15 @@ export const Projects = () => {
       ref={sectionRef}
       className="min-h-screen flex items-center py-20 bg-white dark:bg-gray-900 relative"
     >
-      <div className="container mx-auto px-4 sm:px-6 section-content">
+      <div className="container mx-auto px-6">
         <div
           ref={titleRef}
           className="text-center mb-16 opacity-0 transform translate-y-8 transition-all duration-700 ease-out"
         >
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 md:mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
             My <span className="text-blue-600 dark:text-blue-400">Projects</span>
           </h2>
-          <p className="text-gray-700 dark:text-gray-300 text-sm sm:text-base max-w-2xl mx-auto">
+          <p className="text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
             Here are some of my recent projects that showcase my skills and expertise.
             Each project represents a unique challenge and solution.
           </p>
@@ -96,7 +96,7 @@ export const Projects = () => {
 
         <div
           ref={projectsRef}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 opacity-0 transform translate-y-8 transition-all duration-700 ease-out"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 opacity-0 transform translate-y-8 transition-all duration-700 ease-out"
         >
           {projects.map((project, index) => (
             <div

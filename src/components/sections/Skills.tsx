@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Code, Figma, Database, Globe } from 'lucide-react';
 
 interface Skill {
@@ -32,7 +32,7 @@ export const Skills = () => {
     {
       category: 'Backend Development',
       icon: <Database size={24} />,
-      skills: ['Node.js', 'Express', 'PostgreSQL', 'MongoDB', 'API Design'],
+      skills: ['Node.js', 'Express', 'PostgreSQL', 'MongoDB', 'GraphQL', 'API Design'],
       color: 'bg-green-500',
       darkColor: 'dark:bg-green-600'
     },
@@ -83,15 +83,15 @@ export const Skills = () => {
       ref={sectionRef}
       className="min-h-screen flex items-center py-20 bg-gray-50 dark:bg-gray-800 relative"
     >
-      <div className="container mx-auto px-4 sm:px-6 section-content">
+      <div className="container mx-auto px-6">
         <div
           ref={titleRef}
           className="text-center mb-16 opacity-0 transform translate-y-8 transition-all duration-700 ease-out"
         >
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 md:mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
             My <span className="text-blue-600 dark:text-blue-400">Skills</span>
           </h2>
-          <p className="text-gray-700 dark:text-gray-300 text-sm sm:text-base max-w-2xl mx-auto">
+          <p className="text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
             I've developed expertise in various technologies and tools over the years.
             Here's a snapshot of my technical skills and competencies.
           </p>
@@ -99,7 +99,7 @@ export const Skills = () => {
 
         <div
           ref={skillsRef}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 opacity-0 transform translate-y-8 transition-all duration-700 ease-out"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 opacity-0 transform translate-y-8 transition-all duration-700 ease-out"
         >
           {skills.map((skillGroup, index) => (
             <div

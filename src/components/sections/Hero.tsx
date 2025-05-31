@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ArrowDown } from 'lucide-react';
 import { useScroll } from '../../context/ScrollContext';
 
@@ -44,21 +44,21 @@ export const Hero = () => {
         <div className="absolute bottom-1/4 right-1/3 w-96 h-96 bg-pink-300/20 dark:bg-pink-500/10 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
       </div>
 
-      <div className="container mx-auto px-6 py-12 relative z-10 section-content">
+      <div className="container mx-auto px-6 py-12 relative z-10">
         <div className="text-center max-w-3xl mx-auto">
           <h1 
             ref={titleRef}
-            className="text-4xl sm:text-5xl md:text-7xl font-bold mb-4 md:mb-6 transition-all duration-700 opacity-0 transform translate-y-8"
+            className="text-5xl md:text-7xl font-bold mb-6 transition-all duration-700 opacity-0 transform translate-y-8"
           >
             <span className="block dark:text-white">Hi, I'm </span>
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-blue-400 dark:to-cyan-400">
-              SNK
+              John Doe
             </span>
           </h1>
           
           <p 
             ref={subtitleRef}
-            className="text-lg sm:text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-6 md:mb-10 transition-all duration-700 opacity-0 transform translate-y-8 delay-300"
+            className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-10 transition-all duration-700 opacity-0 transform translate-y-8 delay-300"
           >
             I create beautiful digital experiences 
             <span className="hidden sm:inline">
@@ -68,17 +68,17 @@ export const Hero = () => {
           
           <div 
             ref={ctaRef}
-            className="flex flex-row items-center justify-center space-x-3 transition-all duration-700 opacity-0 transform translate-y-8 delay-600"
+            className="space-y-4 md:space-y-0 md:space-x-4 transition-all duration-700 opacity-0 transform translate-y-8 delay-600"
           >
             <button 
               onClick={() => scrollToSection('about')}
-              className="px-4 py-2 sm:px-6 sm:py-2.5 md:px-8 md:py-3 bg-blue-600 dark:bg-blue-500 text-white rounded-full text-xs sm:text-sm md:text-base font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors hover:shadow-lg w-auto"
+              className="px-8 py-3 bg-blue-600 dark:bg-blue-500 text-white rounded-full font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors hover:shadow-lg"
             >
               Explore My Work
             </button>
             <button 
               onClick={() => scrollToSection('contact')}
-              className="px-4 py-2 sm:px-6 sm:py-2.5 md:px-8 md:py-3 border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 rounded-full text-xs sm:text-sm md:text-base font-medium hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors w-auto"
+              className="px-8 py-3 border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 rounded-full font-medium hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors ml-0 md:ml-4 mt-4 md:mt-0"
             >
               Get In Touch
             </button>

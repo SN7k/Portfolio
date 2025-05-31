@@ -1,9 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Send, Mail, PhoneCall, MapPin } from 'lucide-react';
-import { useScroll } from '../../context/ScrollContext';
 
 export const Contact = () => {
-  const { isMobileView } = useScroll(); // Get mobile view state from context
   const sectionRef = useRef<HTMLElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const infoRef = useRef<HTMLDivElement>(null);
@@ -14,36 +12,6 @@ export const Contact = () => {
     message: '',
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-  
-  // Function to force scroll to bottom on mobile
-  const forceScrollToBottom = () => {
-    if (window.innerWidth < 768) {
-      // Force scroll to bottom of page with a small offset to ensure full visibility
-      const bottomPosition = document.body.scrollHeight - window.innerHeight;
-      
-      // Use auto behavior for immediate effect
-      window.scrollTo({
-        top: bottomPosition,
-        behavior: 'auto'
-      });
-      
-      // Try again after delays to ensure it works in all scenarios
-      setTimeout(() => {
-        window.scrollTo({
-          top: bottomPosition,
-          behavior: 'auto'
-        });
-      }, 100);
-      
-      setTimeout(() => {
-        window.scrollTo({
-          top: bottomPosition,
-          behavior: 'auto'
-        });
-      }, 300);
-    }
-  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -68,59 +36,15 @@ export const Contact = () => {
     }, 5000);
   };
 
-  // Effect to handle component mount
   useEffect(() => {
-    setIsMounted(true);
-    
-    // For mobile, force scroll to bottom when this component mounts
-    if (isMobileView) {
-      // Delay the initial force scroll to ensure the component is fully rendered
-      setTimeout(() => {
-        forceScrollToBottom();
-      }, 100);
-      
-      // Add scroll event listener to keep forcing scroll to bottom
-      const handleScroll = () => {
-        // If we're close to the bottom, force scroll all the way
-        const scrollPosition = window.scrollY;
-        const windowHeight = window.innerHeight;
-        const documentHeight = document.body.scrollHeight;
-        
-        // More aggressive threshold for mobile
-        if (documentHeight - (scrollPosition + windowHeight) < 200) {
-          forceScrollToBottom();
-        }
-      };
-      
-      window.addEventListener('scroll', handleScroll, { passive: true });
-      return () => window.removeEventListener('scroll', handleScroll);
-    }
-  }, [isMobileView]);
-  
-  // Effect to handle animations
-  useEffect(() => {
-    // Only run animations if component is mounted
-    if (!isMounted) return;
-    
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            // When this section becomes visible on mobile, force scroll to bottom
-            if (isMobileView) {
-              // Use multiple attempts with increasing delays to ensure visibility
-              forceScrollToBottom();
-              setTimeout(forceScrollToBottom, 200);
-              setTimeout(forceScrollToBottom, 500);
-            }
-            
-            // Animate form with a slight delay
             if (formRef.current) {
               formRef.current.style.opacity = '1';
               formRef.current.style.transform = 'translateX(0)';
             }
-            
-            // Animate info section with a longer delay
             setTimeout(() => {
               if (infoRef.current) {
                 infoRef.current.style.opacity = '1';
@@ -130,8 +54,7 @@ export const Contact = () => {
           }
         });
       },
-      // Lower threshold to trigger earlier
-      { threshold: 0.1 }
+      { threshold: 0.2 }
     );
 
     if (sectionRef.current) {
@@ -149,24 +72,23 @@ export const Contact = () => {
     <section
       id="contact"
       ref={sectionRef}
-      className={`${isMobileView ? 'pt-10 pb-40' : 'min-h-screen py-20'} flex flex-col items-start justify-start sm:items-center sm:justify-center bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-900 relative section-content`}
-      style={isMobileView ? { marginBottom: '0', paddingBottom: '120px' } : undefined} // Increased padding to ensure full visibility on mobile
+      className="min-h-screen flex items-center py-20 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-900 relative"
     >
-      <div className="container mx-auto px-4 sm:px-6 section-content">
+      <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 md:mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Get In <span className="text-blue-600 dark:text-blue-400">Touch</span>
           </h2>
-          <p className="text-gray-700 dark:text-gray-300 text-sm sm:text-base max-w-2xl mx-auto">
+          <p className="text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
             I'm always open to new opportunities and collaborations.
             Feel free to reach out if you have a project in mind or just want to say hello!
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <form
             ref={formRef}
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 md:p-8 opacity-0 transform translate-x-[-50px] transition-all duration-700 ease-out"
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 opacity-0 transform translate-x-[-50px] transition-all duration-700 ease-out"
             onSubmit={handleSubmit}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -181,7 +103,7 @@ export const Contact = () => {
                   value={formData.name}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  placeholder="SNK"
+                  placeholder="John Doe"
                   required
                 />
               </div>
@@ -196,7 +118,7 @@ export const Contact = () => {
                   value={formData.email}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  placeholder="Shombhunathkaran@gmail.com"
+                  placeholder="john@example.com"
                   required
                 />
               </div>
@@ -270,10 +192,10 @@ export const Contact = () => {
                   <div>
                     <h4 className="font-medium text-gray-900 dark:text-white">Email</h4>
                     <a
-                      href="Shombhunathkaran@gmail.com"
+                      href="mailto:john@example.com"
                       className="text-blue-600 dark:text-blue-400 hover:underline"
                     >
-                      Shombhunathkaran@gmail.com
+                      john@example.com
                     </a>
                   </div>
                 </div>
@@ -288,7 +210,7 @@ export const Contact = () => {
                       href="tel:+1234567890"
                       className="text-blue-600 dark:text-blue-400 hover:underline"
                     >
-                      +917044010709
+                      +1 (234) 567-890
                     </a>
                   </div>
                 </div>
@@ -299,7 +221,7 @@ export const Contact = () => {
                   </div>
                   <div>
                     <h4 className="font-medium text-gray-900 dark:text-white">Location</h4>
-                    <p className="text-gray-700 dark:text-gray-300">Kolkata,India</p>
+                    <p className="text-gray-700 dark:text-gray-300">San Francisco, California</p>
                   </div>
                 </div>
               </div>
