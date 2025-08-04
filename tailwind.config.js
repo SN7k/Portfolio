@@ -5,28 +5,17 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Fira Code', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro', 'Menlo', 'Consolas', 'monospace'],
+        sans: ['Inter', 'SF Pro Display', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
       },
-      colors: {
-        primary: {
-          50: '#e6f1fe',
-          100: '#cce3fd',
-          200: '#99c7fb',
-          300: '#66abf9',
-          400: '#338ff7',
-          500: '#0073f5',
-          600: '#005cc4',
-          700: '#004593',
-          800: '#002e62',
-          900: '#001731',
+      animation: {
+        'fade-in': 'fadeIn 0.5s ease-in-out',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0', transform: 'translateY(10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
-      },
-      boxShadow: {
-        'soft-xl': '0 20px 27px 0 rgba(0, 0, 0, 0.05)',
-      },
-      transitionProperty: {
-        'height': 'height',
-        'spacing': 'margin, padding',
       },
     },
   },
