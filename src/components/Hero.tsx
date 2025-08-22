@@ -47,7 +47,7 @@ const Hero: React.FC = () => {
   }, [handleMouseMove, handleMouseLeave]);
 
   return (
-    <section id="hero" className="min-h-screen flex flex-col justify-start pt-20 sm:pt-24 md:pt-32 lg:pt-40 relative overflow-hidden">
+    <section id="hero" className="min-h-screen flex flex-col justify-start pt-16 md:justify-center md:pt-0 relative overflow-hidden">
       {/* Simplified background elements */}
       <div className="absolute inset-0 overflow-hidden">
         {/* Reduced gradient blobs */}
