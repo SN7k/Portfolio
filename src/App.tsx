@@ -1,11 +1,21 @@
+import { Suspense, lazy } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import Header from './components/Header';
-import Hero from './components/Hero';
-import About from './components/About';
-import Projects from './components/Projects';
-import Contact from './components/Contact';
-import Footer from './components/Footer';
 import ScrollDots from './components/ScrollDots';
+
+// Lazy load components for better performance
+const Hero = lazy(() => import('./components/Hero'));
+const About = lazy(() => import('./components/About'));
+const Projects = lazy(() => import('./components/Projects'));
+const Contact = lazy(() => import('./components/Contact'));
+const Footer = lazy(() => import('./components/Footer'));
+
+// Loading component
+const LoadingSpinner = () => (
+  <div className="min-h-screen flex items-center justify-center">
+    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 dark:border-white"></div>
+  </div>
+);
 
 function App() {
   return (
@@ -14,12 +24,22 @@ function App() {
         <Header />
         <ScrollDots />
         <main className="lg:pl-16">
-          <Hero />
-          <About />
-          <Projects />
-          <Contact />
+          <Suspense fallback={<LoadingSpinner />}>
+            <Hero />
+          </Suspense>
+          <Suspense fallback={<div className="min-h-screen"></div>}>
+            <About />
+          </Suspense>
+          <Suspense fallback={<div className="min-h-screen"></div>}>
+            <Projects />
+          </Suspense>
+          <Suspense fallback={<div className="min-h-screen"></div>}>
+            <Contact />
+          </Suspense>
         </main>
-        <Footer />
+        <Suspense fallback={<div className="h-20"></div>}>
+          <Footer />
+        </Suspense>
       </div>
     </ThemeProvider>
   );

@@ -5,10 +5,14 @@ const sections = navigationSections;
 
 const ScrollDots: React.FC = () => {
   const [activeSection, setActiveSection] = useState('hero');
+  const [, setScrollProgress] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY + window.innerHeight / 2;
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = (window.scrollY / totalHeight) * 100;
+      setScrollProgress(progress);
       
       for (const section of sections) {
         const element = document.getElementById(section.id);
@@ -23,7 +27,7 @@ const ScrollDots: React.FC = () => {
     };
 
     window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Check initial position
+    handleScroll();
     
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -36,26 +40,25 @@ const ScrollDots: React.FC = () => {
   };
 
   return (
-    <div className="fixed right-4 top-1/2 transform -translate-y-1/2 z-40">
-      <div className="flex flex-col space-y-3">
-        {sections.map((section) => (
+    <div className="fixed right-6 top-1/2 transform -translate-y-1/2 z-40">
+      <div className="flex flex-col space-y-4">
+        {sections.map((section,) => (
           <button
             key={section.id}
             onClick={() => scrollToSection(section.id)}
-            className="group relative flex items-center"
+            className="group relative flex items-center transition-all duration-500 hover:scale-125 magnetic-hover"
             aria-label={`Go to ${section.label}`}
           >
             <div
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+              className={`w-2 h-2 rounded-full transition-all duration-500 relative overflow-hidden ${
                 activeSection === section.id
-                  ? 'bg-black dark:bg-white scale-125'
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-500 scale-125 shadow-lg glow-on-hover'
                   : 'bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600'
               }`}
-            />
-            <div className="absolute right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none hidden md:block">
-              <div className="bg-black dark:bg-white text-white dark:text-black px-2 py-1 text-xs font-mono whitespace-nowrap">
-                {section.label}
-              </div>
+            >
+              {activeSection === section.id && (
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 animate-pulse rounded-full"></div>
+              )}
             </div>
           </button>
         ))}

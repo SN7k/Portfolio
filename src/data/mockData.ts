@@ -20,7 +20,7 @@ export interface Project {
   tech: string[];
   github: string;
   demo: string;
-  image?: string;
+  image: string;
   featured: boolean;
 }
 
@@ -88,6 +88,7 @@ export const projects: Project[] = [
     tech: ["REACT.JS", "TYPESCRIPT","TAILWIND CSS","NODE.JS", "EXPRESS.JS", "MONGODB","CLOUDINARY", "JWT", "OTP AUTH"],
     github: "https://github.com/SN7k/InCampus",
     demo: "https://incampus1.netlify.app/",
+    image:"https://github.com/user-attachments/assets/9c031ee6-bf4b-4ec6-8003-2031b24b061d",
     featured: true
   },
   {
@@ -97,6 +98,7 @@ export const projects: Project[] = [
     tech: ["HTML5", "CSS3", "JAVASCRIPT", "NODE.JS", "EXPRESS.JS", "MONGODB", "JWT","CLOUDINARY","CORS"],
     github: "https://github.com/SN7k/bussevakolkata.site",
     demo: "https://bussevakolkata.site",
+    image:"https://github.com/user-attachments/assets/399ff6ce-660a-42f9-a7ef-9eb845d3d3e5",
     featured: true
   },
   
@@ -107,6 +109,7 @@ export const projects: Project[] = [
     tech: ["React", "TypeScript", "Vite", "Tailwind CSS", "Node.js","Express.js","MongoDB","JWT"],
     github: "https://github.com/SN7k/arvyax-wellness-platform",
     demo: "https://arvyaxwellness.netlify.app",
+    image:"https://github.com/user-attachments/assets/69b1d811-1f3e-4867-bb41-1962379595ef",
     featured: true
   }
   
