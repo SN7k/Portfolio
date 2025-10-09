@@ -111,7 +111,7 @@ export const projects: Project[] = [
     demo: "https://arvyaxwellness.netlify.app",
     image:"https://github.com/user-attachments/assets/69b1d811-1f3e-4867-bb41-1962379595ef",
     featured: true
-  }
+  },
 
    {
     id: 4,
