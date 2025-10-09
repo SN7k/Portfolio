@@ -118,7 +118,7 @@ export const projects: Project[] = [
     name: "Sillysites",
     description: "Serious about silly",
     tech: ["React", "TypeScript", "Vite", "Tailwind CSS", "Node.js","Express.js","MongoDB","JWT"],
-    github: "",
+    github: "https://github.com/SN7k/",
     demo: "https://sillysites.studio/",
     image:"",
     featured: true
