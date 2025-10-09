@@ -112,7 +112,17 @@ export const projects: Project[] = [
     image:"https://github.com/user-attachments/assets/69b1d811-1f3e-4867-bb41-1962379595ef",
     featured: true
   }
-  
+
+   {
+    id: 4,
+    name: "Sillysites",
+    description: "Serious about silly",
+    tech: ["React", "TypeScript", "Vite", "Tailwind CSS", "Node.js","Express.js","MongoDB","JWT"],
+    github: "",
+    demo: "https://sillysites.studio/",
+    image:"",
+    featured: true
+  }
 
 ];
 
