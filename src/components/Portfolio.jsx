@@ -108,8 +108,12 @@ const Portfolio = () => {
         <div className="lg:col-span-4 h-full">
           <div className="space-y-6 lg:sticky lg:top-4">
             <div className={`p-6 ${cardStyle}`}>
-              <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 ${theme.accent3} border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-colors duration-500`}>
-                <User className={`w-8 h-8 ${theme.cardText}`} />
+              <div className={`w-16 h-16 rounded-full flex items-center justify-center overflow-hidden mb-4 ${theme.accent3} border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-colors duration-500`}>
+                {personalInfo.logo ? (
+                  <img src={personalInfo.logo} alt={personalInfo.name + ' logo'} className="w-14 h-14 object-contain" />
+                ) : (
+                  <User className={`w-8 h-8 ${theme.cardText}`} />
+                )}
               </div>
               <h2 className="text-xl font-black mb-2 uppercase">About Me</h2>
               <p className="text-sm font-medium opacity-80 leading-relaxed mb-6">
