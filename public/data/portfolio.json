@@ -1,0 +1,102 @@
+{
+  "personalInfo": {
+    "name": "SHOMBHUNATH KARAN",
+    "title": "Full-Stack Developer",
+    "subtitle": "Performance, Usability, and Clean Code",
+    "email": "shombhunathkaran@gmail.com",
+    "github": "https://github.com/sn7k",
+    "linkedin": "https://linkedin.com/in/shombhunath-karan"
+  },
+  "availability": {
+    "label": "FullStack Developer",
+    "active": true
+  },
+  "aboutText": "I’m a full-stack developer who builds modern, clean, and user-friendly web applications with a focus on smooth experience and practical solutions.",
+  "techStack": [
+    {
+      "title": "Frontend",
+      "icon": "Code",
+      "items": [
+        "React.js",
+        "JavaScript (ES6+)",
+        "HTML5",
+        "CSS3"
+      ]
+    },
+    {
+      "title": "Backend",
+      "icon": "Server",
+      "items": [
+        "Node.js",
+        "Express.js",
+        "REST APIs"
+    
+      ]
+    },
+    
+    {
+      "title": "Tools & Platforms",
+      "icon": "Code",
+      "items": [
+        "Git",
+        "GitHub",
+        "Vercel",
+        "Render",
+        "Cloudinary",
+        "Postman"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": 1,
+      "name": "INCAMPUS",
+      "description": "Private college network for posts, memories, and campus updates.",
+      "tech": ["REACT", "TYPESCRIPT", "NODE.JS", "MONGODB"],
+      "github": "https://github.com/SN7k/InCampus",
+      "demo": "https://incampus1.netlify.app/",
+      "image": "https://github.com/user-attachments/assets/9c031ee6-bf4b-4ec6-8003-2031b24b061d",
+      "type": "FULL STACK"
+    },
+    {
+      "id": 2,
+      "name": "BUSSEVA KOLKATA",
+      "description": "Discover Kolkata bus routes, stops, and visuals quickly.",
+      "tech": ["HTML5", "NODE.JS", "MONGODB", "MAPS"],
+      "github": "https://github.com/SN7k/bussevakolkata.site",
+      "demo": "https://bussevakolkata.site",
+      "image": "https://github.com/user-attachments/assets/399ff6ce-660a-42f9-a7ef-9eb845d3d3e5",
+      "type": "UTILITY"
+    },
+    {
+      "id": 3,
+      "name": "Arvyax Wellness",
+      "description": "Wellness app with tips, goal tracking, and curated content.",
+      "tech": ["REACT", "VITE", "TAILWIND", "JWT"],
+      "github": "https://github.com/SN7k/arvyax-wellness-platform",
+      "demo": "https://arvyaxwellness.netlify.app",
+      "image": "https://github.com/user-attachments/assets/69b1d811-1f3e-4867-bb41-1962379595ef",
+      "type": "WEB APP"
+    },
+    {
+      "id": 4,
+      "name": "Sillysites",
+      "description": "Playful studio portfolio of experimental web experiences.",
+      "tech": ["REACT", "TYPESCRIPT", "TAILWIND"],
+      "github": "https://github.com/SN7k/SillySites",
+      "demo": "https://sillysites.studio/",
+      "image": "https://github.com/user-attachments/assets/f5c45fa1-e6db-44a5-a840-3e5ffa895ffc",
+      "type": "STUDIO"
+    },
+    {
+      "id": 5,
+      "name": "Splitaa",
+      "description": "Split bills, track expenses, and settle up effortlessly.",
+      "tech": ["JAVASCRIPT", "PHP", "SCSS", "TYPESCRIPT", "HTML", "CSS", "DOCKER"],
+      "github": "https://github.com/SN7k/Splitaa",
+      "demo": "https://splitaa.snk.codes",
+      "image": "https://github.com/user-attachments/assets/c08fffc4-192d-48d2-b333-96a702a197b7",
+      "type": "WEB APP"
+    }
+  ]
+}
