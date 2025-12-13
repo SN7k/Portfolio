@@ -98,6 +98,16 @@
       "demo": "https://splitaa.snk.codes",
       "image": "https://res.cloudinary.com/dlpskz98w/image/upload/v1765634494/Splitaa_vz5ojx.png",
       "type": "WEB APP"
+    },
+     {
+      "id": 6,
+      "name": "win11-portfolio",
+      "description": "A Windows 11 style portfolio UI built with Next.js",
+      "tech": ["TYPESCRIPT", "SCSS", "JAVASCRIPT", "HTML", "CSS", "DOCKER"],
+      "github": "https://github.com/SN7k/windows11-portfolio",
+      "demo": "https://portfolio.snk.codes",
+      "image": "https://res.cloudinary.com/dlpskz98w/image/upload/v1765652887/windows11_h9znhn.png",
+      "type": "WEB APP"
     }
   ]
 }
