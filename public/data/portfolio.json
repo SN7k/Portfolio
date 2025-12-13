@@ -56,7 +56,7 @@
       "tech": ["REACT", "TYPESCRIPT", "NODE.JS", "MONGODB"],
       "github": "https://github.com/SN7k/InCampus",
       "demo": "https://incampus1.netlify.app/",
-      "image": "https://github.com/user-attachments/assets/c6cca8c1-2f43-4435-9ca6-bb59c72b95d0",
+      "image": "https://res.cloudinary.com/dlpskz98w/image/upload/v1765634494/incampus_rd6ztk.png",
       "type": "FULL STACK"
     },
     {
@@ -66,7 +66,7 @@
       "tech": ["HTML5", "NODE.JS", "MONGODB", "MAPS"],
       "github": "https://github.com/SN7k/bussevakolkata.site",
       "demo": "https://bussevakolkata.site",
-      "image": "https://github.com/user-attachments/assets/399ff6ce-660a-42f9-a7ef-9eb845d3d3e5",
+      "image": "https://res.cloudinary.com/dlpskz98w/image/upload/v1765634493/busseva_kolkata_hqxevd.png",
       "type": "UTILITY"
     },
     {
@@ -76,7 +76,7 @@
       "tech": ["REACT", "VITE", "TAILWIND", "JWT"],
       "github": "https://github.com/SN7k/arvyax-wellness-platform",
       "demo": "https://arvyaxwellness.netlify.app",
-      "image": "https://github.com/user-attachments/assets/69b1d811-1f3e-4867-bb41-1962379595ef",
+      "image": "https://res.cloudinary.com/dlpskz98w/image/upload/v1765634613/arvyaz_wwrvcq.gif",
       "type": "WEB APP"
     },
     {
@@ -86,7 +86,7 @@
       "tech": ["REACT", "TYPESCRIPT", "TAILWIND"],
       "github": "https://github.com/SN7k/SillySites",
       "demo": "https://sillysites.studio/",
-      "image": "https://github.com/user-attachments/assets/f5c45fa1-e6db-44a5-a840-3e5ffa895ffc",
+      "image": "https://res.cloudinary.com/dlpskz98w/image/upload/v1765634494/sillysites_ndi9jd.gif",
       "type": "STUDIO"
     },
     {
@@ -96,7 +96,7 @@
       "tech": ["JAVASCRIPT", "PHP", "SCSS", "TYPESCRIPT", "HTML", "CSS", "DOCKER"],
       "github": "https://github.com/SN7k/Splitaa",
       "demo": "https://splitaa.snk.codes",
-      "image": "https://github.com/user-attachments/assets/c08fffc4-192d-48d2-b333-96a702a197b7",
+      "image": "https://res.cloudinary.com/dlpskz98w/image/upload/v1765634494/Splitaa_vz5ojx.png",
       "type": "WEB APP"
     }
   ]
