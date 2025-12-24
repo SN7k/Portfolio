@@ -124,24 +124,7 @@ const themes = {
       { className: 'absolute bottom-20 right-24 w-32 h-32 rounded-full bg-rose-300/40 animate-floatSlow blur-md' }
     ]
   },
-  hackedVibe: {
-    id: 'hackedVibe', bg: 'bg-[#020302]', text: 'text-green-300',
-    accent1: 'bg-green-600', accent1Hover: 'hover:bg-green-700', accent1Text: 'text-green-500',
-    accent2: 'bg-green-800', accent3: 'bg-green-500', selection: 'selection:bg-green-600', lightAccent: 'bg-green-900',
-    cardText: 'text-green-300', tagText: 'text-green-300', accentContent: 'text-green-300',
-    cardBg: 'bg-[#050d05]', border: 'border-2 border-green-600', shadow: 'shadow-[4px_4px_0px_0px_rgba(22,163,74,1)]',
-    decorations: [
-      { className: 'pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(22,163,74,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(22,163,74,0.1)_1px,transparent_1px)] bg-[size:60px_60px]' },
-      ...Array.from({ length: 14 }).map(() => ({
-        className: 'absolute w-px h-16 bg-green-500/50 animate-fallSlow',
-        style: { left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%`, animationDelay: `${Math.random() * 10}s` }
-      })),
-      ...Array.from({ length: 8 }).map(() => ({
-        className: 'absolute w-2 h-2 rounded-full bg-green-400/60 animate-pulseDot',
-        style: { left: `${Math.random() * 95}%`, top: `${Math.random() * 95}%` }
-      }))
-    ]
-  },
+  
   halloween: {
     id: 'halloween', bg: 'bg-gradient-to-b from-[#1A0F00] via-[#2C0F0F] to-[#3B1F00]', text: 'text-orange-200',
     accent1: 'bg-orange-500', accent1Hover: 'hover:bg-orange-600', accent1Text: 'text-orange-400',
@@ -158,6 +141,46 @@ const themes = {
         style: { left: `${Math.random() * 90}%`, top: `${Math.random() * 90}%` }
       })),
       { className: 'absolute -top-10 left-1/2 -translate-x-1/2 w-72 h-72 rounded-full bg-orange-500/10 blur-3xl' }
+    ]
+  },
+  sketch: {
+    id: 'sketch',
+    bg: 'bg-[#fdfbf7]',
+    text: 'text-zinc-800',
+    accent1: 'bg-zinc-900',
+    accent1Hover: 'hover:bg-zinc-800',
+    accent1Text: 'text-zinc-900',
+    accent2: 'bg-[#fff176]',
+    accent3: 'bg-blue-200',
+    selection: 'selection:bg-yellow-300',
+    lightAccent: 'bg-zinc-100',
+    cardText: 'text-zinc-800',
+    tagText: 'text-zinc-800',
+    accentContent: 'text-white',
+    cardBg: 'bg-white',
+    border: 'border-2 border-zinc-800',
+    shadow: 'shadow-none',
+    roughBorderStyle: {
+      borderRadius: '255px 15px 225px 15px/15px 225px 15px 255px',
+      borderWidth: '2px',
+      borderColor: '#27272a',
+      borderStyle: 'solid'
+    },
+    sketchFont: 'font-[\'Architects_Daughter\',_cursive]',
+    paperTexture: 'bg-[radial-gradient(#d1d1d1_0.5px,transparent_0.5px)] bg-[length:24px_24px]',
+    roughBorderVariants: [
+      { borderRadius: '255px 15px 225px 15px/15px 225px 15px 255px', borderWidth: '2px' },
+      { borderRadius: '235px 15px 205px 15px/15px 205px 15px 235px', borderWidth: '2px' },
+      { borderRadius: '245px 15px 215px 15px/15px 215px 15px 245px', borderWidth: '2px' },
+      { borderRadius: '265px 15px 235px 15px/15px 235px 15px 265px', borderWidth: '2px' },
+      { borderRadius: '225px 15px 245px 15px/15px 245px 15px 225px', borderWidth: '2px' },
+      { borderRadius: '250px 15px 220px 15px/15px 220px 15px 250px', borderWidth: '2px' }
+    ],
+    projectColors: ['#ffeb3b', '#b2ebf2', '#f8bbd0', '#c8e6c9', '#d1c4e9', '#ffccbc'],
+    decorations: [
+      { className: 'absolute w-20 h-20 bg-yellow-200/50 rounded-full blur-xl', style: { top: '20%', left: '10%' } },
+      { className: 'absolute w-16 h-16 bg-pink-200/40 rounded-full blur-lg', style: { top: '60%', right: '15%' } },
+      { className: 'absolute w-12 h-12 bg-blue-200/40 rounded-full blur-md', style: { bottom: '30%', left: '80%' } }
     ]
   }
 };

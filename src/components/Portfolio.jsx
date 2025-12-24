@@ -67,12 +67,26 @@ const Portfolio = () => {
   const techStack = techStackFromData && Array.isArray(techStackFromData) ? techStackFromData : defaultTechStack;
   const ICONS = { Code, Server, Database };
 
-  const cardStyle = `${theme.cardBg} ${theme.border} ${theme.shadow} rounded-xl transition-all duration-200 ${theme.cardText}`;
-  const buttonStyle = `${theme.accent1} text-white ${theme.border} ${theme.shadow} ${theme.accent1Hover} rounded-xl uppercase font-bold tracking-wide transition-colors`;
-  const badgeStyle = `${theme.cardBg} ${theme.border} ${theme.cardText} shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]`;
+  const isSketch = theme.id === 'sketch';
+  const roughBorderStyle = isSketch && theme.roughBorderStyle ? theme.roughBorderStyle : {};
+  
+  // Helper function to get varied rough border styles for sketch theme
+  const getRoughBorder = (index = 0) => {
+    if (!isSketch || !theme.roughBorderVariants) return {};
+    const variants = theme.roughBorderVariants;
+    return {
+      ...variants[index % variants.length],
+      borderColor: '#27272a',
+      borderStyle: 'solid'
+    };
+  };
+  
+  const cardStyle = isSketch ? 'bg-white border-2 border-zinc-800' : `${theme.cardBg} ${theme.border} ${theme.shadow} rounded-xl transition-all duration-200 ${theme.cardText}`;
+  const buttonStyle = isSketch ? 'bg-zinc-900 text-white sketch-animate' : `${theme.accent1} ${theme.accentContent} ${theme.border} ${theme.shadow} ${theme.accent1Hover} rounded-xl uppercase font-bold tracking-wide transition-colors`;
+  const badgeStyle = isSketch ? 'bg-zinc-100 border-2 border-zinc-800 text-zinc-800' : `${theme.cardBg} ${theme.border} ${theme.cardText} shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]`;
 
   return (
-    <div className={`relative min-h-screen ${theme.bg} font-sans ${theme.text} ${theme.selection} selection:text-white pb-32 transition-colors duration-500`}>
+    <div className={`relative min-h-screen ${theme.bg} ${isSketch ? `${theme.paperTexture} font-['Architects_Daughter',_cursive]` : 'font-sans'} ${theme.text} ${theme.selection} selection:text-white pb-32 transition-colors duration-500`}>
       {/* Animated Decorations */}
       {theme.decorations && theme.decorations.map((d, idx) => (
         <div key={idx} className={d.className} style={d.style} aria-hidden="true" />
@@ -83,7 +97,10 @@ const Portfolio = () => {
           const hasDot = rawLabel.startsWith('.');
           const cleanLabel = hasDot ? rawLabel.replace(/^\.+/, '').trimStart() : rawLabel;
           return (
-            <div className={`inline-flex items-center ${hasDot ? 'gap-2' : ''} px-4 py-2 rounded-full mb-8 ${badgeStyle}`}>
+            <div 
+              className={`inline-flex items-center ${hasDot ? 'gap-2' : ''} px-4 py-2 mb-8 ${badgeStyle}`}
+              style={isSketch ? roughBorderStyle : {}}
+            >
               {hasDot && (
                 <span className="relative flex h-3 w-3">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-black opacity-20"></span>
@@ -95,49 +112,67 @@ const Portfolio = () => {
           );
         })()}
 
-        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 drop-shadow-[4px_4px_0_rgba(0,0,0,0.2)] uppercase leading-none">
-          {personalInfo.name.split(' ')[0]} <br />
-          <span className={`${theme.accent1Text} transition-colors duration-500`}>{personalInfo.name.split(' ')[1]}</span>
+        <h1 className={`${isSketch ? 'text-5xl md:text-8xl leading-none' : 'text-5xl md:text-7xl leading-none'} font-extrabold tracking-tight mb-6 drop-shadow-[4px_4px_0_rgba(0,0,0,0.2)] uppercase`}>
+          {isSketch ? (
+            <>
+              <span className="marker-highlight">{personalInfo.name.split(' ')[0]}</span> <br />
+              <span className="ml-4 md:ml-12">{personalInfo.name.split(' ')[1]}</span>
+            </>
+          ) : (
+            <>
+              {personalInfo.name.split(' ')[0]} <br />
+              <span className={`${theme.accent1Text} transition-colors duration-500`}>{personalInfo.name.split(' ')[1]}</span>
+            </>
+          )}
         </h1>
 
-        <p className="text-xl md:text-2xl font-bold opacity-90 leading-relaxed mx-auto max-w-[90%] sm:max-w-none break-words sm:whitespace-nowrap">{personalInfo.subtitle}</p>
+        <p className={`${isSketch ? 'text-2xl' : 'text-xl md:text-2xl'} font-bold ${isSketch ? 'opacity-70' : 'opacity-90'} leading-relaxed mx-auto max-w-[90%] sm:max-w-none break-words sm:whitespace-nowrap ${isSketch ? 'italic' : ''}`}>
+          {isSketch ? `"${personalInfo.subtitle}"` : personalInfo.subtitle}
+        </p>
       </header>
 
       <main className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left column sticky stack */}
         <div className="lg:col-span-4 h-full">
           <div className="space-y-6 lg:sticky lg:top-4">
-            <div className={`p-6 ${cardStyle}`}>
-              <div className={`w-16 h-16 rounded-full flex items-center justify-center overflow-hidden mb-4 ${theme.accent3} border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-colors duration-500`}>
+            <div className={`p-6 ${cardStyle}`} style={isSketch ? getRoughBorder(0) : {}}>
+              <div className={`w-16 h-16 ${isSketch ? 'border-2 border-zinc-800' : 'rounded-full'} flex items-center justify-center overflow-hidden mb-4 ${theme.accent3} ${isSketch ? '' : 'border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'} transition-colors duration-500`} style={isSketch ? getRoughBorder(1) : {}}>
                 {personalInfo.logo ? (
                   <img src={personalInfo.logo} alt={personalInfo.name + ' logo'} className="w-14 h-14 object-contain" />
                 ) : (
                   <User className={`w-8 h-8 ${theme.cardText}`} />
                 )}
               </div>
-              <h2 className="text-xl font-black mb-2 uppercase">About Me</h2>
-              <p className="text-sm font-medium opacity-80 leading-relaxed mb-6">
+              <h2 className={`text-xl font-black mb-2 uppercase ${isSketch ? 'underline decoration-wavy underline-offset-4' : ''}`}>About Me</h2>
+              <p className={`text-sm font-medium opacity-80 leading-relaxed mb-6 ${isSketch ? 'text-base' : ''}`}>
                 {aboutText}
               </p>
-              <button onClick={toggleContact} className={`w-full py-3 flex items-center justify-center gap-2 ${buttonStyle}`}>
+              <button 
+                onClick={toggleContact} 
+                className={`w-full ${isSketch ? 'px-8 py-3 text-xl' : 'py-3'} flex items-center justify-center gap-2 uppercase font-bold tracking-wide transition-colors ${buttonStyle}`}
+                style={isSketch ? getRoughBorder(2) : {}}
+              >
                 <Mail className="w-4 h-4" /> Contact Me
               </button>
             </div>
 
-            <div className={`p-6 ${cardStyle}`}>
-              <h3 className="text-sm font-bold uppercase tracking-wider mb-4 border-b-2 border-black pb-2 inline-block">Tech Stack</h3>
+            <div className={`${isSketch ? 'p-8' : 'p-6'} ${cardStyle}`} style={isSketch ? getRoughBorder(3) : {}}>
+              <h3 className={`${isSketch ? 'text-4xl' : 'text-sm'} font-bold uppercase tracking-wider mb-4 border-b-2 border-black pb-2 inline-block ${isSketch ? 'underline decoration-wavy underline-offset-8 border-b-0 mb-8' : ''}`}>Tech Stack</h3>
 
               <div className="space-y-4">
                 {techStack.map((stack, idx) => {
                   const Icon = ICONS[stack.icon] || Code;
                   return (
-                    <div key={idx} className="flex items-start gap-4 group">
-                      <div className={`p-2 rounded-lg ${theme.accent2} ${theme.accentContent} border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-colors duration-500`}>
+                    <div key={idx} className={`flex items-start ${isSketch ? 'gap-3' : 'gap-4'} group`}>
+                      <div 
+                        className={`p-2 ${isSketch ? 'border-2 border-zinc-800' : 'rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'} ${theme.accent2} ${theme.cardText} transition-colors duration-500`}
+                        style={isSketch ? getRoughBorder(idx + 10) : {}}
+                      >
                         <Icon className="w-5 h-5" />
                       </div>
-                      <div>
-                        <h4 className="font-bold">{stack.title}</h4>
-                        <p className="text-xs font-medium opacity-70">{Array.isArray(stack.items) ? stack.items.join(', ') : String(stack.items || '')}</p>
+                      <div className={isSketch ? 'mb-6' : ''}>
+                        <h4 className={`${isSketch ? 'text-2xl' : ''} font-bold`}>{stack.title}</h4>
+                        <p className={`${isSketch ? 'text-lg' : 'text-xs'} font-medium opacity-70`}>{Array.isArray(stack.items) ? stack.items.join(', ') : String(stack.items || '')}</p>
                       </div>
                     </div>
                   );
@@ -146,10 +181,22 @@ const Portfolio = () => {
             </div>
 
             <div className="flex gap-4 justify-center">
-              <a href={personalInfo.linkedin} target="_blank" rel="noreferrer" className={`p-4 flex items-center justify-center hover:${theme.accent3} transition-colors duration-500 ${cardStyle}`}>
+              <a 
+                href={personalInfo.linkedin} 
+                target="_blank" 
+                rel="noreferrer" 
+                className={`p-4 flex items-center justify-center hover:${theme.accent3} transition-colors duration-500 ${cardStyle}`}
+                style={isSketch ? getRoughBorder(4) : {}}
+              >
                 <Linkedin className="w-6 h-6" />
               </a>
-              <a href={personalInfo.github} target="_blank" rel="noreferrer" className={`p-4 flex items-center justify-center hover:${theme.accent3} transition-colors duration-500 ${cardStyle}`}>
+              <a 
+                href={personalInfo.github} 
+                target="_blank" 
+                rel="noreferrer" 
+                className={`p-4 flex items-center justify-center hover:${theme.accent3} transition-colors duration-500 ${cardStyle}`}
+                style={isSketch ? getRoughBorder(5) : {}}
+              >
                 <Github className="w-6 h-6" />
               </a>
             </div>
@@ -157,8 +204,8 @@ const Portfolio = () => {
         </div>
         {/* Right column scrolls (header + projects) */}
         <div className="lg:col-span-8 space-y-6">
-          <div className={`flex items-center justify-between p-4 ${cardStyle}`}>
-            <h2 className="text-lg font-extrabold uppercase tracking-wide drop-shadow-[3px_3px_0_rgba(0,0,0,0.1)]">
+          <div className={`flex items-center justify-between p-4 ${cardStyle}`} style={isSketch ? getRoughBorder(6) : {}}>
+            <h2 className={`${isSketch ? 'text-4xl' : 'text-lg'} font-extrabold uppercase tracking-wide drop-shadow-[3px_3px_0_rgba(0,0,0,0.1)] ${isSketch ? 'underline decoration-wavy underline-offset-8' : ''}`}>
               Selected <span className={`${theme.accent1Text}`}>Projects</span>
             </h2>
             <div className="flex gap-2">
@@ -167,9 +214,79 @@ const Portfolio = () => {
               <span className={`h-3 w-3 rounded-full ${theme.accent3}`}></span>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {projects.map(project => (
-              <div key={project.id} className={`group flex flex-col h-full ${cardStyle} overflow-hidden transition-transform duration-300 hover:-translate-y-1`}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {projects.map((project, idx) => {
+              const sketchColor = isSketch && theme.projectColors ? theme.projectColors[idx % theme.projectColors.length] : null;
+              
+              if (isSketch) {
+                return (
+                  <div 
+                    key={project.id} 
+                    className="group relative bg-white p-6 transition-transform hover:-translate-y-2"
+                    style={{
+                      ...getRoughBorder(idx + 20),
+                      transform: `rotate(${idx % 2 === 0 ? '1deg' : '-1deg'})`
+                    }}
+                  >
+                    {/* ID Badge */}
+                    <div className="absolute -top-4 -left-4 px-3 py-1 bg-zinc-900 text-white font-bold" style={getRoughBorder(idx + 30)}>
+                      PRJ-{String(idx + 1).padStart(2, '0')}
+                    </div>
+
+                    {/* Colorful square with project info */}
+                    <div 
+                      className="aspect-square mb-6 border-2 border-zinc-800 flex flex-col items-center justify-center p-4 text-center group-hover:opacity-80 transition-all relative overflow-hidden"
+                      style={{ backgroundColor: sketchColor }}
+                    >
+                      {project.image ? (
+                        <img 
+                          src={project.image} 
+                          alt={project.name} 
+                          className="absolute inset-0 w-full h-full object-cover opacity-[0.98]"
+                        />
+                      ) : (
+                        <div className="relative z-10">
+                          <h3 className="text-3xl font-bold mb-2 uppercase">{project.name}</h3>
+                          <div className="w-12 h-1 bg-zinc-800 mb-4 mx-auto"></div>
+                          <p className="text-sm italic">{project.description}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Tags */}
+                    <div className="space-y-4">
+                      <div className="flex flex-wrap gap-2">
+                        {project.tech.map(tag => (
+                          <span key={tag} className="text-[10px] font-bold border border-zinc-800 px-2 py-0.5 rounded-sm bg-white/50 uppercase">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                      
+                      {/* Links */}
+                      <div className="flex gap-4 pt-2 border-t border-zinc-200">
+                        {project.github && (
+                          <a href={project.github} target="_blank" rel="noreferrer" className="flex items-center gap-1 hover:underline font-bold text-sm">
+                            <Github size={14} /> Source
+                          </a>
+                        )}
+                        {project.demo && (
+                          <a href={project.demo} target="_blank" rel="noreferrer" className="flex items-center gap-1 hover:underline font-bold text-sm">
+                            <ExternalLink size={14} /> Live Demo
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+              
+              // Regular theme project card
+              return (
+              <div 
+                key={project.id} 
+                className={`group flex flex-col h-full ${cardStyle} overflow-hidden transition-transform duration-300 hover:-translate-y-1`}
+              >
                 {/* Window-style header */}
                 <div className={`flex items-center justify-between px-4 py-3 border-b-2 border-black ${theme.accent2} transition-colors duration-500`}>
                   <div className="flex gap-1.5">
@@ -231,31 +348,54 @@ const Portfolio = () => {
                   </div>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </main>
 
-      <button onClick={cycleTheme} className={`fixed bottom-6 right-6 p-4 rounded-full border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${theme.accent1} text-white hover:scale-110 transition-all z-40`} aria-label="Change Theme">
+      <button 
+        onClick={cycleTheme} 
+        className={`fixed bottom-6 right-6 p-4 ${isSketch ? 'border-2 border-zinc-800' : 'rounded-full border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]'} ${theme.accent1} text-white hover:scale-110 transition-all z-40`} 
+        style={isSketch ? getRoughBorder(7) : {}}
+        aria-label="Change Theme"
+      >
         <Palette className="w-6 h-6" />
       </button>
 
       {showContact && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in zoom-in duration-200">
-          <div className={`p-8 max-w-md w-full relative ${theme.cardBg} ${theme.cardText} border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-2xl transition-colors duration-500`}>
-            <button onClick={toggleContact} className="absolute top-4 right-4 p-1 hover:bg-slate-100 rounded-full border-2 border-transparent hover:border-black transition-all">
+          <div 
+            className={`p-8 md:p-10 max-w-md w-full relative ${theme.cardBg} ${theme.cardText} border-4 border-black ${isSketch ? '-rotate-[0.5deg] border-2 border-zinc-800' : 'rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]'} transition-colors duration-500`}
+            style={isSketch ? getRoughBorder(8) : {}}
+          >
+            {isSketch && <div className="absolute top-4 left-1/2 -translate-x-1/2 w-16 h-2 bg-zinc-400/30 rounded-full"></div>}
+            
+            <button onClick={toggleContact} className={`absolute top-4 right-4 p-1 hover:bg-slate-100 ${isSketch ? 'border-2 border-zinc-800' : 'rounded-full'} ${isSketch ? '' : 'border-2 border-transparent'} hover:border-black transition-all`} style={isSketch ? getRoughBorder(9) : {}}>
               <X className="w-6 h-6" />
             </button>
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-extrabold mb-2 drop-shadow-[3px_3px_0_rgba(0,0,0,0.15)]">Let's Talk!</h2>
-              <p className="font-medium opacity-80">I'm currently accepting new projects.</p>
+              <h2 className={`text-3xl font-extrabold mb-2 drop-shadow-[3px_3px_0_rgba(0,0,0,0.15)] ${isSketch ? 'underline decoration-double text-5xl' : ''}`}>
+                {isSketch ? 'Contact Me' : "Let's Talk!"}
+              </h2>
+              {!isSketch && <p className="font-medium opacity-80">I'm currently accepting new projects.</p>}
             </div>
             <div className="space-y-4">
-              <a href={`mailto:${personalInfo.email}`} className={`flex items-center justify-between p-4 rounded-xl transition-all group ${theme.cardBg} ${theme.cardText} border-2 border-black hover:${theme.accent2} transition-colors duration-300`}>
+              <a 
+                href={`mailto:${personalInfo.email}`} 
+                className={`flex items-center justify-between p-4 ${isSketch ? 'bg-zinc-50 border-2 border-zinc-800' : `${theme.cardBg} rounded-xl border-2 border-black`} ${theme.cardText} hover:bg-zinc-100 transition-colors duration-300`}
+                style={isSketch ? getRoughBorder(40) : {}}
+              >
                 <span className="font-bold text-sm sm:text-base truncate">{personalInfo.email}</span>
                 <Mail className="w-5 h-5 flex-shrink-0" />
               </a>
-              <a href={personalInfo.linkedin} target="_blank" rel="noreferrer" className={`flex items-center justify-between p-4 rounded-xl transition-all group ${theme.lightAccent} ${theme.tagText} border-2 border-black hover:${theme.accent3} transition-colors duration-300`}>
+              <a 
+                href={personalInfo.linkedin} 
+                target="_blank" 
+                rel="noreferrer" 
+                className={`flex items-center justify-between p-4 ${isSketch ? 'bg-zinc-50 border-2 border-zinc-800' : `${theme.lightAccent} rounded-xl border-2 border-black`} ${theme.tagText} hover:bg-zinc-100 transition-colors duration-300`}
+                style={isSketch ? getRoughBorder(41) : {}}
+              >
                 <span className="font-bold">LinkedIn Profile</span>
                 <Linkedin className="w-5 h-5" />
               </a>

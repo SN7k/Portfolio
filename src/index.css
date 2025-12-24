@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,3 +7,52 @@
 html, body { height: 100%; }
 
 body { font-family: system-ui, ui-sans-serif, 'Inter', Arial, sans-serif; }
+
+/* Sketch Theme Font for Inputs */
+input, textarea {
+  font-family: inherit;
+}
+
+/* Sketch Theme Animations */
+@keyframes scribble {
+  0% { transform: translate(0,0) rotate(0deg); }
+  25% { transform: translate(1px, -1px) rotate(0.5deg); }
+  50% { transform: translate(-1px, 1px) rotate(-0.5deg); }
+  75% { transform: translate(1px, 1px) rotate(0.2deg); }
+  100% { transform: translate(0,0) rotate(0deg); }
+}
+
+.sketch-animate:hover {
+  animation: scribble 0.3s infinite;
+}
+
+.marker-highlight {
+  position: relative;
+  z-index: 1;
+}
+
+.marker-highlight::after {
+  content: "";
+  position: absolute;
+  left: -4px;
+  bottom: 2px;
+  width: 108%;
+  height: 45%;
+  background: #fff176;
+  z-index: -1;
+  transform: rotate(-1.5deg);
+  opacity: 0.7;
+}
+
+/* Rough border styles */
+.rough-border {
+  border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+}
+
+.rough-border-sm {
+  border-radius: 225px 15px 215px 15px/15px 215px 15px 225px;
+}
+
+input.sketch-input, textarea.sketch-input {
+  font-family: 'Architects Daughter', cursive;
+}
