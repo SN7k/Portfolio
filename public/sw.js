@@ -1,5 +1,5 @@
-
-const CACHE_NAME = 'snk-portfolio-v1';
+const CACHE_VERSION = 'v2.0.0'; 
+const CACHE_NAME = `snk-portfolio-${CACHE_VERSION}`;
 
 const CORE_ASSETS = [
   '/',
@@ -14,15 +14,20 @@ const CORE_ASSETS = [
 ];
 
 self.addEventListener('install', (event) => {
+  console.log('[SW] Installing new version:', CACHE_VERSION);
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(CORE_ASSETS)).then(() => self.skipWaiting())
   );
 });
 
 self.addEventListener('activate', (event) => {
+  console.log('[SW] Activating new version:', CACHE_VERSION);
   event.waitUntil(
     caches.keys().then(keys => Promise.all(
-      keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+      keys.filter(k => k !== CACHE_NAME).map(k => {
+        console.log('[SW] Deleting old cache:', k);
+        return caches.delete(k);
+      })
     )).then(() => self.clients.claim())
   );
 });
@@ -33,19 +38,27 @@ self.addEventListener('fetch', (event) => {
 
   if (req.method !== 'GET') return;
 
-  if (url.pathname.startsWith('/data/')) {
+  // Network-first strategy for HTML, JS, CSS, and JSON files (always get fresh content)
+  if (url.pathname.endsWith('.html') || 
+      url.pathname.endsWith('.js') || 
+      url.pathname.endsWith('.jsx') ||
+      url.pathname.endsWith('.css') ||
+      url.pathname.startsWith('/data/') ||
+      url.pathname === '/') {
     event.respondWith(
       fetch(req)
         .then(res => {
+          // Clone and cache the fresh response
           const copy = res.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(req, copy));
           return res;
         })
-        .catch(() => caches.match(req))
+        .catch(() => caches.match(req)) // Fallback to cache if offline
     );
     return;
   }
 
+  // Cache-first strategy for images and other static assets
   event.respondWith(
     caches.match(req).then(cached => {
       if (cached) return cached;
