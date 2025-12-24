@@ -56,3 +56,27 @@ input, textarea {
 input.sketch-input, textarea.sketch-input {
   font-family: 'Architects Daughter', cursive;
 }
+
+/* Color Stick Slider Animations */
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-in {
+  animation-fill-mode: both;
+}
+
+.slide-in-from-bottom-4 {
+  animation-name: slideInFromBottom;
+}
+
+.fade-in {
+  animation-timing-function: ease-out;
+}

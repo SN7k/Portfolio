@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Mail,
   Database,
@@ -18,7 +18,12 @@ const Portfolio = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { theme, cycleTheme } = useTheme();
+  const [showColorStick, setShowColorStick] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const holdTimerRef = useRef(null);
+  const buttonRef = useRef(null);
+  const colorStickRef = useRef(null);
+  const { theme, cycleTheme, setThemeByIndex, getCurrentThemeIndex, getTotalThemes, themes } = useTheme();
 
   useEffect(() => {
     fetch('/data/portfolio.json')
@@ -32,6 +37,68 @@ const Portfolio = () => {
   }, []);
 
   const toggleContact = () => setShowContact(!showContact);
+
+  // Handle mouse/touch events for color stick with hold detection
+  const handleThemeButtonStart = (e) => {
+    if (e.type === 'touchstart') e.preventDefault();
+    
+    holdTimerRef.current = setTimeout(() => {
+      setShowColorStick(true);
+      setIsDragging(true);
+    }, 250); // 250ms threshold for holding
+  };
+
+  const handleThemeButtonEnd = () => {
+    if (holdTimerRef.current) {
+      clearTimeout(holdTimerRef.current);
+      
+      // If color stick wasn't shown, it's a single click - cycle theme
+      if (!showColorStick) {
+        cycleTheme();
+      }
+      
+      holdTimerRef.current = null;
+    }
+    setShowColorStick(false);
+    setIsDragging(false);
+  };
+
+  const handleColorStickDrag = useCallback((clientY) => {
+    if (!showColorStick || !colorStickRef.current || !isDragging) return;
+    
+    const rect = colorStickRef.current.getBoundingClientRect();
+    const totalThemes = getTotalThemes();
+    
+    const y = clientY - rect.top;
+    const percentage = Math.max(0, Math.min(1, y / rect.height));
+    const themeIndex = Math.floor(percentage * totalThemes);
+    
+    setThemeByIndex(themeIndex);
+  }, [showColorStick, isDragging, getTotalThemes, setThemeByIndex]);
+
+  const onMouseMove = useCallback((e) => {
+    if (isDragging) handleColorStickDrag(e.clientY);
+  }, [isDragging, handleColorStickDrag]);
+
+  const onTouchMove = useCallback((e) => {
+    if (isDragging) handleColorStickDrag(e.touches[0].clientY);
+  }, [isDragging, handleColorStickDrag]);
+
+  // Global event listeners for dragging
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', onMouseMove);
+      window.addEventListener('mouseup', handleThemeButtonEnd);
+      window.addEventListener('touchmove', onTouchMove, { passive: false });
+      window.addEventListener('touchend', handleThemeButtonEnd);
+    }
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', handleThemeButtonEnd);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', handleThemeButtonEnd);
+    };
+  }, [isDragging, onMouseMove, onTouchMove]);
 
   if (loading) {
     return (
@@ -355,13 +422,69 @@ const Portfolio = () => {
       </main>
 
       <button 
-        onClick={cycleTheme} 
-        className={`fixed bottom-6 right-6 p-4 ${isSketch ? 'border-2 border-zinc-800' : 'rounded-full border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]'} ${theme.accent1} text-white hover:scale-110 transition-all z-40`} 
+        ref={buttonRef}
+        onMouseDown={handleThemeButtonStart}
+        onTouchStart={handleThemeButtonStart}
+        onMouseUp={handleThemeButtonEnd}
+        onTouchEnd={handleThemeButtonEnd}
+        className={`fixed bottom-6 right-6 p-4 ${isSketch ? 'border-2 border-zinc-800' : 'rounded-full border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]'} ${theme.accent1} text-white transition-all z-40 ${showColorStick ? 'scale-90' : 'hover:scale-110 active:scale-95'}`} 
         style={isSketch ? getRoughBorder(7) : {}}
         aria-label="Change Theme"
       >
-        <Palette className="w-6 h-6" />
+        <Palette className={`w-6 h-6 ${showColorStick ? 'animate-pulse' : ''}`} />
+        {showColorStick && (
+          <div 
+            className="absolute inset-[-8px] rounded-full border-2 animate-ping opacity-30" 
+            style={{ borderColor: 'currentColor' }}
+          />
+        )}
       </button>
+
+      {/* Color Stick Slider */}      
+      <div 
+        ref={colorStickRef}
+        className={`fixed bottom-24 transition-all duration-500 flex flex-col items-center z-50
+          ${showColorStick ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-75 translate-y-20 pointer-events-none'}`}
+        style={{
+          transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+          right: 'calc(24px + 2rem)',
+          transform: showColorStick ? 'translateX(50%)' : 'translateX(50%) translateY(20px) scale(0.75)'
+        }}
+      >
+        <div className="bg-white/5 backdrop-blur-2xl border border-white/5 p-3 rounded-[2rem] shadow-2xl flex flex-col items-center gap-3">
+          {/* Theme index display */}
+          <span 
+            className={`text-[10px] font-mono font-bold px-2 py-1 rounded-full ${theme.cardText}`}
+            style={{ 
+              backgroundColor: `${theme.accent1.replace('bg-', '')}20`,
+              opacity: 0.9
+            }}
+          >
+            {getCurrentThemeIndex() + 1}/{getTotalThemes()}
+          </span>
+
+          {/* Vertical gradient track */}
+          <div 
+            className="w-1.5 h-[300px] rounded-full relative cursor-ns-resize overflow-visible"
+            style={{
+              background: 'linear-gradient(to bottom, #ff0000 0%, #ff7f00 14.28%, #ffff00 28.56%, #00ff00 42.84%, #00ffff 57.12%, #0000ff 71.4%, #8b00ff 85.68%, #ff00ff 92.84%, #ff0066 100%)'
+            }}
+          >
+            {/* Thumb indicator */}
+            <div 
+              className="absolute left-1/2 w-7 h-7 bg-white rounded-full shadow-2xl border-4 border-black/20 transition-all"
+              style={{ 
+                top: `${(getCurrentThemeIndex() / (getTotalThemes() - 1)) * 100}%`,
+                transform: isDragging ? 'translate(-50%, -50%) scale(1.1)' : 'translate(-50%, -50%)',
+                boxShadow: '0 0 20px rgba(255,255,255,0.6), 0 4px 10px rgba(0,0,0,0.3)'
+              }}
+            />
+          </div>
+        </div>
+        
+        {/* Tooltip tail */}
+        <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-zinc-900/90" />
+      </div>
 
       {showContact && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in zoom-in duration-200">

@@ -178,24 +178,50 @@ const ThemeContext = createContext({
   current: 'yellow',
   cycleTheme: () => {},
   setTheme: () => {},
+  setThemeByIndex: () => {},
+  getCurrentThemeIndex: () => 0,
+  getTotalThemes: () => 0,
   themes
 });
 
 export const ThemeProvider = ({ children }) => {
   const [current, setCurrent] = useState('yellow');
+  const themeKeys = Object.keys(themes);
 
   const cycleTheme = useCallback(() => {
-    const keys = Object.keys(themes);
-    const nextIndex = (keys.indexOf(current) + 1) % keys.length;
-    setCurrent(keys[nextIndex]);
-  }, [current]);
+    const nextIndex = (themeKeys.indexOf(current) + 1) % themeKeys.length;
+    setCurrent(themeKeys[nextIndex]);
+  }, [current, themeKeys]);
 
   const setTheme = useCallback((id) => {
     if (themes[id]) setCurrent(id);
   }, []);
 
+  const setThemeByIndex = useCallback((index) => {
+    if (index >= 0 && index < themeKeys.length) {
+      setCurrent(themeKeys[index]);
+    }
+  }, [themeKeys]);
+
+  const getCurrentThemeIndex = useCallback(() => {
+    return themeKeys.indexOf(current);
+  }, [current, themeKeys]);
+
+  const getTotalThemes = useCallback(() => {
+    return themeKeys.length;
+  }, [themeKeys]);
+
   return (
-    <ThemeContext.Provider value={{ theme: themes[current], current, cycleTheme, setTheme, themes }}>
+    <ThemeContext.Provider value={{ 
+      theme: themes[current], 
+      current, 
+      cycleTheme, 
+      setTheme, 
+      setThemeByIndex,
+      getCurrentThemeIndex,
+      getTotalThemes,
+      themes 
+    }}>
       {children}
     </ThemeContext.Provider>
   );
