@@ -112,18 +112,6 @@ const themes = {
       }))
     ]
   },
-  solar: {
-    id: 'solar', bg: 'bg-gradient-to-br from-yellow-50 via-orange-50 to-rose-50', text: 'text-amber-900',
-    accent1: 'bg-orange-500', accent1Hover: 'hover:bg-orange-600', accent1Text: 'text-orange-500',
-    accent2: 'bg-amber-300', accent3: 'bg-rose-300', selection: 'selection:bg-orange-500', lightAccent: 'bg-white/60',
-    cardText: 'text-amber-900', tagText: 'text-amber-900', accentContent: 'text-amber-900',
-    cardBg: 'bg-white/70 backdrop-blur', border: 'border-2 border-amber-400', shadow: 'shadow-[4px_4px_0px_0px_rgba(251,146,60,0.7)]',
-    decorations: [
-      { className: 'absolute top-10 left-1/2 -translate-x-1/2 w-64 h-64 rounded-full bg-orange-200/40 blur-3xl animate-pulseDot' },
-      { className: 'absolute top-1/4 left-1/4 w-24 h-24 rounded-full bg-amber-300/40 animate-bubbleSlow blur-md' },
-      { className: 'absolute bottom-20 right-24 w-32 h-32 rounded-full bg-rose-300/40 animate-floatSlow blur-md' }
-    ]
-  },
   
   halloween: {
     id: 'halloween', bg: 'bg-gradient-to-b from-[#1A0F00] via-[#2C0F0F] to-[#3B1F00]', text: 'text-orange-200',
