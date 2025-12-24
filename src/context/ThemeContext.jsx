@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 
 const themes = {
   yellow: {
@@ -185,8 +185,17 @@ const ThemeContext = createContext({
 });
 
 export const ThemeProvider = ({ children }) => {
-  const [current, setCurrent] = useState('yellow');
+  const [current, setCurrent] = useState(() => {
+    // Load theme from sessionStorage (persists during page refresh, but not after closing)
+    const sessionTheme = sessionStorage.getItem('currentTheme');
+    return sessionTheme && themes[sessionTheme] ? sessionTheme : 'yellow';
+  });
   const themeKeys = Object.keys(themes);
+
+  // Save theme to sessionStorage whenever it changes
+  useEffect(() => {
+    sessionStorage.setItem('currentTheme', current);
+  }, [current]);
 
   const cycleTheme = useCallback(() => {
     const nextIndex = (themeKeys.indexOf(current) + 1) % themeKeys.length;

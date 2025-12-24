@@ -80,3 +80,13 @@ input.sketch-input, textarea.sketch-input {
 .fade-in {
   animation-timing-function: ease-out;
 }
+
+/* Glass Morphism Effect */
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(40px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(150%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}

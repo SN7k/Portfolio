@@ -40,7 +40,10 @@ const Portfolio = () => {
 
   // Handle mouse/touch events for color stick with hold detection
   const handleThemeButtonStart = (e) => {
-    if (e.type === 'touchstart') e.preventDefault();
+    if (e.type === 'touchstart') {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     
     holdTimerRef.current = setTimeout(() => {
       setShowColorStick(true);
@@ -77,26 +80,43 @@ const Portfolio = () => {
   }, [showColorStick, isDragging, getTotalThemes, setThemeByIndex]);
 
   const onMouseMove = useCallback((e) => {
-    if (isDragging) handleColorStickDrag(e.clientY);
+    if (isDragging) {
+      e.preventDefault();
+      handleColorStickDrag(e.clientY);
+    }
   }, [isDragging, handleColorStickDrag]);
 
   const onTouchMove = useCallback((e) => {
-    if (isDragging) handleColorStickDrag(e.touches[0].clientY);
+    if (isDragging) {
+      e.preventDefault();
+      e.stopPropagation();
+      handleColorStickDrag(e.touches[0].clientY);
+    }
   }, [isDragging, handleColorStickDrag]);
 
   // Global event listeners for dragging
   useEffect(() => {
     if (isDragging) {
+      // Prevent body scroll when dragging
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+      
       window.addEventListener('mousemove', onMouseMove);
       window.addEventListener('mouseup', handleThemeButtonEnd);
       window.addEventListener('touchmove', onTouchMove, { passive: false });
       window.addEventListener('touchend', handleThemeButtonEnd);
+    } else {
+      // Re-enable body scroll
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
     }
     return () => {
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', handleThemeButtonEnd);
       window.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('touchend', handleThemeButtonEnd);
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
     };
   }, [isDragging, onMouseMove, onTouchMove]);
 
@@ -443,15 +463,15 @@ const Portfolio = () => {
       {/* Color Stick Slider */}      
       <div 
         ref={colorStickRef}
-        className={`fixed bottom-24 transition-all duration-500 flex flex-col items-center z-50
-          ${showColorStick ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-75 translate-y-20 pointer-events-none'}`}
+        className={`fixed bottom-24 flex flex-col items-center z-50 ${showColorStick ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-75 translate-y-20 pointer-events-none'}`}
         style={{
-          transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+          transition: 'opacity 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
           right: 'calc(24px + 2rem)',
-          transform: showColorStick ? 'translateX(50%)' : 'translateX(50%) translateY(20px) scale(0.75)'
+          transform: showColorStick ? 'translateX(50%)' : 'translateX(50%) translateY(20px) scale(0.75)',
+          willChange: 'transform, opacity'
         }}
       >
-        <div className="bg-white/5 backdrop-blur-2xl border border-white/5 p-3 rounded-[2rem] shadow-2xl flex flex-col items-center gap-3">
+        <div className="glass-morphism p-3 rounded-[2rem] shadow-2xl flex flex-col items-center gap-3" style={{ transition: 'none' }}>
           {/* Theme index display */}
           <span 
             className={`text-[10px] font-mono font-bold px-2 py-1 rounded-full ${theme.cardText}`}
