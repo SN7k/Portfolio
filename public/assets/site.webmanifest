@@ -1,7 +1,9 @@
 {
-	"name": "Shombhunath Karan Portfolio",
-	"short_name": "SK Portfolio",
-	"description": "Interactive portfolio and projects of Shombhunath Karan.",
+	"lang": "en",
+	"dir": "ltr",
+	"name": "Shombhunath Karan Portfolio | FullStack Developer",
+	"short_name": "SNK Portfolio",
+	"description": "Portfolio of Shombhunath Karan, FullStack Developer. Projects, contact, and more.",
 	"id": "/",
 	"start_url": "/?source=pwa",
 	"scope": "/",
@@ -41,5 +43,6 @@
 			"url": "/#contact"
 		}
 	],
-	"prefer_related_applications": false
+	"prefer_related_applications": false,
+	"related_applications": []
 }
